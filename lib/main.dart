@@ -16,8 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'F10S Shopping',
       initialRoute: AppPage.initial,
       getPages: AppPage.routes,
-      // smartManagement: SmartManagement.keepFactory,
-      // defaultTransition: Transition.fade,
+       defaultTransition: Transition.fade,
     );
   }
 }

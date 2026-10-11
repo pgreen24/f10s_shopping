@@ -8,9 +8,9 @@ class SplashScreen  extends GetView<SplashLogic>{
   const SplashScreen ({super.key});
   @override
   Widget build(BuildContext context){
-    return Scaffold(
-      backgroundColor: AppsColor.mainColor,
-      body: SafeArea(
+    return Material(
+      color: AppsColor.mainColor,
+      child: SafeArea(
           child: Center(
             child: Column(
               children: [
@@ -53,10 +53,10 @@ class SplashScreen  extends GetView<SplashLogic>{
                   width: 60,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: const LinearProgressIndicator(
+                    child: LinearProgressIndicator(
                       minHeight: 4,
-                      backgroundColor: Color(0xFFE0E0E0),
-                      valueColor: AlwaysStoppedAnimation<Color>(AppsColor.black),
+                      backgroundColor:AppsColor.mainColor ,
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppsColor.black),
                     ),
                   ),
                 ),
