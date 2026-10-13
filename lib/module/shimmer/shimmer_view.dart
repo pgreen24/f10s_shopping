@@ -3,11 +3,12 @@ import 'package:get/get.dart';
 import '../../utils/apps_color.dart';
 import 'shimmer_logic.dart';
 
-class ShimmerPage extends GetView<ShimmerLogic> {
+class ShimmerPage extends StatelessWidget {
   const ShimmerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ShimmerLogic controller = Get.put(ShimmerLogic());
     return Material(
       color: AppsColor.white,
       child: Stack(
