@@ -87,10 +87,10 @@ class HomeLogic extends GetxController {
         'color': 0xFFE0E0E0,
       });
       Get.snackbar("Success", "Added to your cart successfully!",
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
     } else {
       Get.snackbar("Notice", "Item is already in your cart!",
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
     }
   }
 

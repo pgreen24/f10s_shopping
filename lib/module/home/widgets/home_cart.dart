@@ -420,6 +420,11 @@ class HomeCart extends GetView<HomeLogic> {
                               ],
                             ),
                             Obx(() {
+                              // double totalPrice = 0;
+                              // for (var item in controller.cartItems) {
+                              //   totalPrice += (item['price'] as double) *
+                              //       (item['quantity'].value as int);
+                              // }
                               return Text(
                                 "\$${controller.totalPrice.toStringAsFixed(2)}",
                                 style: const TextStyle(

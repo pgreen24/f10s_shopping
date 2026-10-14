@@ -62,7 +62,6 @@ class HomeWishlist extends GetView<HomeLogic> {
             ),
             const SizedBox(height: 24),
 
-            // উইশলিস্টের প্রডাক্ট লিস্ট ভিউ
             Expanded(
               child: Obx(() {
                 if (controller.wishlistItems.isEmpty) {

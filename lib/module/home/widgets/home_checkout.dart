@@ -105,7 +105,7 @@ class HomeCheckout extends StatelessWidget {
                           const SizedBox(height: 12),
                           _buildPriceRow('Shipping Fee', '\$0.00'),
                           const SizedBox(height: 12),
-                          _buildPriceRow('Discount', '\$0.00'),
+                          _buildPriceRow('Discount', '\$24.00'),
                           const Divider(
                             height: 40,
                             color: Color(0xFFEEEEEE),
