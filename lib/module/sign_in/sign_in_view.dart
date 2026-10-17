@@ -14,11 +14,21 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-
   String _selectedGender = "Prefer not to say";
+  final _formKey = GlobalKey<FormState>();
+  bool _isPasswordObscured = true;
+  bool _isConfirmPasswordObscured = true;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
+
     final SignInLogic logic = Get.put(SignInLogic());
 
     return Scaffold(
@@ -31,154 +41,250 @@ class _SignInPageState extends State<SignInPage> {
           child: CircleAvatar(
             backgroundColor: Colors.grey.shade100,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black),
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                size: 18,
+                color: Colors.black,
+              ),
               onPressed: () => Get.back(),
             ),
           ),
         ),
         title: const Text(
           "Sign up",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
         centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.grey.shade100,
-              child: IconButton(
-                icon: const Icon(Icons.menu, size: 20, color: Colors.black),
-                onPressed: () {},
-              ),
-            ),
           ),
         ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Create an account",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Sign up to shop your favourites and keep track of your orders.",
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 24),
-
-              _buildLabel("Full name"),
-              _buildTextField(hintText: "Enter your full name"),
-
-              _buildLabel("Email address"),
-              _buildTextField(hintText: "Enter your email address"),
-
-              _buildLabel("Password"),
-              _buildTextField(
-                hintText: "Create a password",
-                obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off_outlined, color: Colors.grey),
-              ),
-
-              _buildLabel("Confirm password"),
-              _buildTextField(
-                hintText: "Re-enter your password",
-                obscureText: true,
-                suffixIcon: const Icon(Icons.visibility_off_outlined, color: Colors.grey),
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildLabel("Gender"),
-                  Text("Select one option", style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
-                ],
-              ),
-
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Create an account",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: _genderOption("Female")),
-                        Expanded(child: _genderOption("Male")),
-                      ],
+                const SizedBox(height: 8),
+                Text(
+                  "Sign up to shop your favourites and keep track of your orders.",
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 24),
+
+                _buildLabel("Full name"),
+                _buildTextField(
+                  hintText: "Enter your full name",
+                  controller: _nameController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Name cannot be empty";
+                    }
+                    return null;
+                  },
+                ),
+
+                _buildLabel("Email address"),
+                _buildTextField(
+                  hintText: "Enter your email address",
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Email cannot be empty";
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
+                      return "Enter a valid email address";
+                    }
+                    return null;
+                  },
+                ),
+
+                _buildLabel("Password"),
+                _buildTextField(
+                  hintText: "Create a password",
+                  controller: _passwordController,
+                  obscureText: _isPasswordObscured,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      color: Colors.grey,
                     ),
-                    Row(
-                      children: [
-                        Expanded(child: _genderOption("Non-binary")),
-                        Expanded(child: _genderOption("Prefer not to say")),
-                      ],
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordObscured = !_isPasswordObscured;
+                      });
+                    },
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Password cannot be empty";
+                    }
+                    if (value.length < 6) {
+                      return "Password must be at least 6 characters";
+                    }
+                    return null;
+                  },
+                ),
+
+                _buildLabel("Confirm password"),
+                _buildTextField(
+                  hintText: "Re-enter your password",
+                  controller: _confirmPasswordController,
+                  obscureText: _isConfirmPasswordObscured,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordObscured = !_isConfirmPasswordObscured;
+                      });
+                    },
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Confirm password cannot be empty";
+                    }
+                    if (value != _passwordController.text) {
+                      return "Passwords do not match";
+                    }
+                    return null;
+                  },
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildLabel("Gender"),
+                    Text(
+                      "Select one option",
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
 
-              _buildLabel("Age"),
-              _buildTextField(hintText: "Enter your age in years", keyboardType: TextInputType.number),
-
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF222021),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    elevation: 0,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onPressed: () {
-                    Get.to(() => const SignInSuccessfully());
-                  },
-                  child: const Text(
-                    "Sign up",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: "Already have an account? ",
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  child: Column(
                     children: [
-                      WidgetSpan(
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.to(() => const LoginPage());
-                          },
-                          child: const Text(
-                            "Log In",
-                            style: TextStyle(
-                              color: AppsColor.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
+                      Row(
+                        children: [
+                          Expanded(child: _genderOption("Female")),
+                          Expanded(child: _genderOption("Male")),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(child: _genderOption("Non-binary")),
+                          Expanded(child: _genderOption("Prefer not to say")),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ),
+                const SizedBox(height: 16),
 
-            ],
+                _buildLabel("Age"),
+                _buildTextField(
+                  hintText: "Enter your age in years",
+                  controller: _ageController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Age cannot be empty";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF222021),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Get.to(() => const SignInSuccessfully());
+                      }
+                    },
+                    child: const Text(
+                      "Sign up",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Already have an account? ",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
+                      children: [
+                        WidgetSpan(
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.to(() => const LoginPage());
+                            },
+                            child: const Text(
+                              "Log In",
+                              style: TextStyle(
+                                color: AppsColor
+                                    .black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -190,26 +296,38 @@ class _SignInPageState extends State<SignInPage> {
       padding: const EdgeInsets.only(bottom: 8, top: 12),
       child: Text(
         label,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black),
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+          color: Colors.black,
+        ),
       ),
     );
   }
 
   Widget _buildTextField({
     required String hintText,
+    required TextEditingController controller,
+    required String? Function(String?)? validator,
     bool obscureText = false,
     Widget? suffixIcon,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return TextField(
+    return TextFormField(
+      controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      validator: validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
         filled: true,
         fillColor: Colors.grey.shade100,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -219,7 +337,6 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  // জেন্ডার অপশন মেথডটি এখন ক্লাসের ভেতরে সঠিকভাবে রাখা হয়েছে
   Widget _genderOption(String title) {
     bool isSelected = _selectedGender == title;
     return InkWell(
@@ -235,7 +352,9 @@ class _SignInPageState extends State<SignInPage> {
                 value: isSelected,
                 onChanged: (val) => setState(() => _selectedGender = title),
                 activeColor: const Color(0xFF222021),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
                 side: BorderSide(color: Colors.grey.shade400),
               ),
             ),

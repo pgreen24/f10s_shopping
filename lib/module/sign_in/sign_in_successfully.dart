@@ -2,12 +2,14 @@ import 'package:f10s_shopping/module/sign_in/sign_in_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../home/home_logic.dart';
 import '../home/home_view.dart';
 class SignInSuccessfully extends GetView<SignInLogic> {
   const SignInSuccessfully({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Get.put(HomeLogic());
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.5),
       body: Center(

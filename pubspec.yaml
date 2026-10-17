@@ -38,6 +38,7 @@ dependencies:
   responsive_builder: ^0.7.1
   shimmer: ^4.0.0
   google_fonts: ^9.0.0
+  auto_validate: ^3.0.8
 
 
 dev_dependencies:

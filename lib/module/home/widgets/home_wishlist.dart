@@ -19,7 +19,7 @@ class HomeWishlist extends GetView<HomeLogic> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildRoundButton(Icons.arrow_back_ios_new, () {
-                    controller.changePage(0);
+                    controller.changePage(1);
                   }),
                   const Text(
                     "Wishlist",
@@ -82,7 +82,7 @@ class HomeWishlist extends GetView<HomeLogic> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // প্রডাক্ট ইমেজ প্লেসহোল্ডার বক্স
+
                           Container(
                             width: 100,
                             height: 135,
@@ -93,7 +93,7 @@ class HomeWishlist extends GetView<HomeLogic> {
                           ),
                           const SizedBox(width: 16),
 
-                          // প্রডাক্টের ডিটেইলস এবং বাটন সেকশন
+
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +116,7 @@ class HomeWishlist extends GetView<HomeLogic> {
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            item['category'] ?? '', // স্ক্রিনশটের White - Size M এর মতো ক্যাটাগরি টেক্সট
+                                            item['category'] ?? '',
                                             style: TextStyle(
                                               color: Colors.grey.shade400,
                                               fontSize: 13,
@@ -125,8 +125,6 @@ class HomeWishlist extends GetView<HomeLogic> {
                                         ],
                                       ),
                                     ),
-
-                                    // গোল আকৃতির রিমুভ (x) বাটন
                                     GestureDetector(
                                       onTap: () => controller.toggleWishlist(item),
                                       child: Container(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:f10s_shopping/module/home/home_logic.dart'; // আপনার প্রোজেক্ট অনুযায়ী পাথ ঠিক রাখুন
+import 'package:f10s_shopping/module/home/home_logic.dart';
+
+import 'oder_complete.dart';
 
 class HomeCheckout extends StatelessWidget {
   const HomeCheckout({super.key});
@@ -37,112 +39,133 @@ class HomeCheckout extends StatelessWidget {
                   _buildRoundButton(Icons.linear_scale, onTap: () {}),
                 ],
               ),
-              const SizedBox(height: 50),
-
+              const SizedBox(height: 30),
 
               Expanded(
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: [
-
-                    Obx(
-                      () => _buildCartItem(
-                        imageUrl: 'https://unsplash.com',
-                        title: 'Modern light clothes',
-                        subtitle: 'Dress modern',
-                        price: '\$212.99',
-                        quantity: logic.quantity1.value,
-                        onDecrease: () {
-                          if (logic.quantity1.value > 0)
-                            logic.quantity1.value--;
+                child: Obx(() {
+                  if (logic.cartItems.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "Your cart is empty!",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                    );
+                  }
+                  return ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: logic.cartItems.length,
+                        itemBuilder: (context, index) {
+                          final cartItem = logic.cartItems[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 20.0),
+                            child: Obx(
+                              () => _buildCartItem(
+                                imageUrl: 'https://unsplash.com',
+                                title: cartItem['title'] ?? '',
+                                subtitle: cartItem['subtitle'] ?? '',
+                                price:
+                                    '\$${(cartItem['price'] as double).toStringAsFixed(2)}',
+                                quantity: cartItem['quantity'].value,
+                                onDecrease: () {
+                                  if (cartItem['quantity'].value > 1) {
+                                    cartItem['quantity'].value--;
+                                  }
+                                },
+                                onIncrease: () {
+                                  cartItem['quantity'].value++;
+                                },
+                              ),
+                            ),
+                          );
                         },
-                        onIncrease: () => logic.quantity1.value++,
                       ),
-                    ),
-                    const SizedBox(height: 20),
 
-                    Obx(
-                      () => _buildCartItem(
-                        imageUrl: 'https://unsplash.com',
-                        title: 'Modern light clothes',
-                        subtitle: 'Dress modern',
-                        price: '\$162.99',
-                        quantity: logic.quantity2.value,
-                        onDecrease: () {
-                          if (logic.quantity2.value > 0)
-                            logic.quantity2.value--;
+                      const SizedBox(height: 30),
+                      const Text(
+                        'Shipping Information',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPaymentCard(),
+                      const SizedBox(height: 32),
+
+
+                      Builder(
+                        builder: (context) {
+                          double subtotal = 0;
+                          for (var item in logic.cartItems) {
+                            subtotal +=
+                                (item['price'] as double) *
+                                (item['quantity'].value as int);
+                          }
+
+                          return Column(
+                            children: [
+                              _buildPriceRow(
+                                'Total (${logic.cartItems.length} items)',
+                                '\$${subtotal.toStringAsFixed(2)}',
+                              ),
+                              const SizedBox(height: 12),
+                               _buildPriceRow('Shipping Fee', '\$0.00'),
+                              const SizedBox(height: 12),
+                              _buildPriceRow(
+                                'Discount',
+                                '-\$${logic.discount.toStringAsFixed(2)}',
+                              ),
+                              const Divider(
+                                height: 40,
+                                color: Color(0xFFEEEEEE),
+                                thickness: 1,
+                              ),
+                              _buildPriceRow(
+                                'Sub Total',
+                                '\$${logic.totalPrice.toStringAsFixed(2)}',
+                                isBold: true,
+                              ),
+                            ],
+                          );
                         },
-                        onIncrease: () => logic.quantity2.value++,
                       ),
-                    ),
-                    const SizedBox(height: 72),
-
-                    const Text(
-                      'Shipping Information',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildPaymentCard(),
-                    const SizedBox(height: 32),
-
-                    Obx(() {
-                      int totalItems =
-                          logic.quantity1.value + logic.quantity2.value;
-                      double rawTotal =
-                          (logic.price1 * logic.quantity1.value) +
-                          (logic.price2 * logic.quantity2.value);
-
-                      return Column(
-                        children: [
-                          _buildPriceRow(
-                            'Total ($totalItems items)',
-                            '\$${rawTotal.toStringAsFixed(2)}',
-                          ),
-                          const SizedBox(height: 12),
-                          _buildPriceRow('Shipping Fee', '\$0.00'),
-                          const SizedBox(height: 12),
-                          _buildPriceRow('Discount', '\$24.00'),
-                          const Divider(
-                            height: 40,
-                            color: Color(0xFFEEEEEE),
-                            thickness: 1,
-                          ),
-                          _buildPriceRow(
-                            'Sub Total',
-                            '\$${rawTotal.toStringAsFixed(2)}',
-                            isBold: true,
-                          ),
-                        ],
-                      );
-                    }),
-                    const SizedBox(height: 40),
-                  ],
-                ),
+                      const SizedBox(height: 40),
+                    ],
+                  );
+                }),
               ),
 
-              Container(
-                width: double.infinity,
-                height: 64,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF222021),
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Pay',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {
+
+                  Get.to(() => const OderComplete());
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 64,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF222021),
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Pay',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
+
             ],
           ),
         ),
@@ -318,7 +341,11 @@ class HomeCheckout extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceRow(String label, String val, {bool isBold = false}) {
+  static Widget _buildPriceRow(
+    String label,
+    String val, {
+    bool isBold = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

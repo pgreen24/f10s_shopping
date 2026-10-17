@@ -25,17 +25,15 @@ class HomeLogic extends GetxController {
 
   double get totalPrice {
     double subtotal = 0;
-    if (cartItems.isNotEmpty) {
-      for (var item in cartItems) {
-        subtotal += (item['price'] as double) * (item['quantity'].value as int);
-      }
-    } else {
-      subtotal = (price1 * quantity1.value) +
-          (price2 * quantity2.value) +
-          (price3 * quantity3.value);
+    if (cartItems.isEmpty) {
+      return 0.0;
+    }
+    for (var item in cartItems) {
+      subtotal += (item['price'] as double) * (item['quantity'].value as int);
     }
     return subtotal - discount;
   }
+
 
   var cardNumber = ''.obs;
   var cardHolder = ''.obs;
@@ -100,5 +98,29 @@ class HomeLogic extends GetxController {
       cartItems.removeAt(index);
     }
   }
+
+  void addToCart(dynamic product, int qty) {
+
+    double parsedPrice = double.tryParse(
+        (product.price ?? '0').toString().replaceAll('\$', '')) ?? 0.0;
+
+
+    int index = cartItems.indexWhere((item) => item['title'] == product.title);
+
+    if (index != -1) {
+
+      cartItems[index]['quantity'].value += qty;
+    } else {
+
+      cartItems.add({
+        'title': product.title ?? '',
+        'subtitle': product.category ?? 'Standard • M',
+        'price': parsedPrice,
+        'quantity': qty.obs,
+        'color': 0xFFE0E0E0,
+      });
+    }
+  }
+
 }
 

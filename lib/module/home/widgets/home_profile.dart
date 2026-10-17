@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../utils/apps_color.dart';
 import '../home_logic.dart';
+import 'home_payment_method.dart';
 
 class HomeProfile extends GetView<HomeLogic> {
   const HomeProfile ({super.key});
@@ -70,119 +71,130 @@ class HomeProfile extends GetView<HomeLogic> {
                     const SizedBox(height: 15),
                     Row(
                       children: [
-                        Container(
-                          width: 144,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            color: AppsColor.grey,
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-
-                                  "12",style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                )
-                                ),
-                                Text(
-                                    "orders",style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.grey,
-                                )
-                                ),
-                              ],
+                        Expanded(
+                          child: Container(
+                            height: 90,
+                            decoration: BoxDecoration(
+                              color: AppsColor.grey,
+                              borderRadius: BorderRadius.circular(32),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Container(
-                          width: 144,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            color: AppsColor.grey,
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                          child: Center(
-                            child:Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                    "3",style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                )
-                                ),
-                                Text(
-                                    "wishlist",style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.grey,
-                                )
-                                ),
-                              ],
-                            ),
-
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Container(
-                          width: 144,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            color: AppsColor.grey,
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        "5.0",style: TextStyle(
-                                      fontSize: 15,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "12",
+                                    style: TextStyle(
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black,
-                                    )
                                     ),
-                                    const SizedBox(width: 5),
-                                    Icon(Icons.star, color: Colors.orange, size: 15),
-                                  ],
-                                ),
-                                Text(
-                                    "Reviews",style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.grey,
-                                )
-                                ),
-                              ],
+                                  ),
+                                  const Text(
+                                    "orders",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
 
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            height: 90,
+                            decoration: BoxDecoration(
+                              color: AppsColor.grey,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Obx(() => Text(
+                                    "${controller.wishlistItems.length}",
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )),
+                                  const Text(
+                                    "wishlist",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            height: 90,
+                            decoration: BoxDecoration(
+                              color: AppsColor.grey,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        "5.0",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      const Icon(Icons.star, color: Colors.orange, size: 15),
+                                    ],
+                                  ),
+                                  const Text(
+                                    "Reviews",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
+
                     const SizedBox(height: 15),
           SizedBox(
             height: 140,
-            width: 500,
+            width: double.infinity,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: const Color(0xFF161616),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Padding(
+
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
+
                   children: [
                     DecoratedBox(
                       decoration: BoxDecoration(
@@ -276,10 +288,8 @@ class HomeProfile extends GetView<HomeLogic> {
           const SizedBox(height: 15),
                     Text("ACCOUNT OVERVIEW",style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold),),
                     const SizedBox(height: 15),
-
                     Padding(
                       padding: const EdgeInsets.all(16),
-
                       child: Column(
                         children: [
                           Row(
@@ -326,7 +336,14 @@ class HomeProfile extends GetView<HomeLogic> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+                              GestureDetector(
+                                onTap: () => controller.changePage(1),
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: Colors.grey.shade400,
+                                ),
+                              )
                             ],
                           ),
 
@@ -416,7 +433,21 @@ class HomeProfile extends GetView<HomeLogic> {
                                   ],
                                 ),
                               ),
-                              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+
+
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const HomePaymentMethod()),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: Colors.grey.shade400,
+                                ),
+                              )
                             ],
                           ),
                         ],
@@ -457,16 +488,19 @@ class HomeProfile extends GetView<HomeLogic> {
                                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text(
-                                      "3 saved items",
-                                      style: TextStyle(color: Colors.grey.shade500),
-                                    ),
+                                    Obx(() => Text(
+                                      "${controller.wishlistItems.length} saved items.",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    )),
                                   ],
                                 ),
                               ),
 
                               Card(
-                                elevation: 0,
+                                elevation: 1,
                                 color: Colors.grey.shade200,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                 child: const Padding(
@@ -475,7 +509,15 @@ class HomeProfile extends GetView<HomeLogic> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+                              GestureDetector(
+                                onTap: () => controller.changePage(2),
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: Colors.grey.shade400,
+                                ),
+                              )
+
                             ],
                           ),
 

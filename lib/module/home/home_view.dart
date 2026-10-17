@@ -1,6 +1,9 @@
 import 'package:f10s_shopping/module/home/widgets/home_cart.dart';
 import 'package:f10s_shopping/module/home/widgets/home_navigation.dart';
+import 'package:f10s_shopping/module/home/widgets/home_product_details.dart';
+import 'package:f10s_shopping/module/home/widgets/home_product_model.dart';
 import 'package:f10s_shopping/module/home/widgets/home_profile.dart';
+import 'package:f10s_shopping/module/home/widgets/home_search.dart';
 import 'package:f10s_shopping/module/home/widgets/home_wishlist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,6 +15,7 @@ class HomePage extends GetView<HomeLogic> {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(HomeLogic());
     final List<Widget> pages = [
       _buildHomeBody(),
       const HomeCart(),
@@ -81,10 +85,15 @@ class HomePage extends GetView<HomeLogic> {
                     color: Colors.grey.shade200,
                     border: Border.all(color: Colors.grey.shade300, width: 1),
                   ),
-                  child: const ClipOval(
-                    child: Icon(Icons.person, color: Colors.grey),
+                  child: InkResponse(
+                    onTap: () => controller.changePage(3),
+                    radius: 24,
+                    highlightColor: Colors.transparent,
+                    child: const Icon(Icons.person, color: Colors.grey),
                   ),
-                ),
+                )
+
+
               ],
             ),
             const SizedBox(height: 20),
@@ -93,31 +102,44 @@ class HomePage extends GetView<HomeLogic> {
                 Expanded(
                   child: Container(
                     height: 52,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          color: Colors.grey.shade400,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          "Search ",
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 14,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Get.to(() => const HomeSearch());
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                color: Colors.grey.shade400,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                "Search...",
+                                style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 12),
+
                 Container(
                   width: 52,
                   height: 52,
@@ -125,10 +147,23 @@ class HomePage extends GetView<HomeLogic> {
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(Icons.tune, color: Colors.white, size: 20),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: const Icon(
+                          Icons.tune,
+                          color: Colors.white,
+                          size: 20
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
+
             const SizedBox(height: 20),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -260,6 +295,100 @@ class HomePage extends GetView<HomeLogic> {
       'price': price,
       'rating': rating,
     };
+    final currentProduct = ProductModel(
+      title: title,
+      category: category,
+      price: price,
+      originalPrice: "\$190.99", // ডেমো হিসেবে দেওয়া, আপনার ডেটা সোর্স থেকে নিতে পারেন
+      rating: rating,
+      reviewsCount: "7,932 reviews", // ডেমো রিভিউ
+      description: "Its simple and elegant shape makes it perfect for those of you who like minimalist clothes.",
+      imagePath: "assets/images/dress.png", // আপনার ইমেজের পাথ
+    );
+    return InkWell(
+    onTap: () {
+    // প্রোডাক্টে ক্লিক করলে GetX এর মাধ্যমে ডিটেইলস পেজে ডাইনামিক অবজেক্ট পাঠানো হচ্ছে
+    Get.to(() => const HomeProductDetails(), arguments: currentProduct);
+    },
+    borderRadius: BorderRadius.circular(20),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Container(
+    height: imageHeight,
+    decoration: BoxDecoration(
+    color: Colors.grey.shade200,
+    borderRadius: BorderRadius.circular(20),
+    ),
+    alignment: Alignment.topRight,
+    padding: const EdgeInsets.all(12),
+    child: GestureDetector(
+    onTap: () {
+    controller.toggleWishlist(productData);
+    },
+    child: Container(
+    width: 32,
+    height: 32,
+    decoration: const BoxDecoration(
+    color: Colors.white,
+    shape: BoxShape.circle,
+    ),
+    child: Obx(() {
+    final isFav = controller.isFavorite(title);
+    return Icon(
+    isFav ? Icons.favorite : Icons.favorite_border,
+    color: isFav ? Colors.red : Colors.black87,
+    size: 16,
+    );
+    }),
+    ),
+    ),
+    ),
+    const SizedBox(height: 10),
+    Text(
+    title,
+    style: const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+    color: Colors.black,
+    ),
+    ),
+    const SizedBox(height: 2),
+    Text(
+    category,
+    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+    ),
+    const SizedBox(height: 6),
+    Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+    Text(
+    price,
+    style: const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+    color: Colors.black,
+    ),
+    ),
+    Row(
+    children: [
+    const Icon(Icons.star, size: 14, color: Colors.amber),
+    const SizedBox(width: 4),
+    Text(
+    rating,
+    style: const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 12,
+    color: Colors.black,
+    ),
+    ),
+    ],
+    ),
+    ],
+    ),
+    ],
+    ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
