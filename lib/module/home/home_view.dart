@@ -91,9 +91,7 @@ class HomePage extends GetView<HomeLogic> {
                     highlightColor: Colors.transparent,
                     child: const Icon(Icons.person, color: Colors.grey),
                   ),
-                )
-
-
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -150,13 +148,12 @@ class HomePage extends GetView<HomeLogic> {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {
-                      },
+                      onTap: () {},
                       borderRadius: BorderRadius.circular(16),
                       child: const Icon(
-                          Icons.tune,
-                          color: Colors.white,
-                          size: 20
+                        Icons.tune,
+                        color: Colors.white,
+                        size: 20,
                       ),
                     ),
                   ),
@@ -299,95 +296,94 @@ class HomePage extends GetView<HomeLogic> {
       title: title,
       category: category,
       price: price,
-      originalPrice: "\$190.99", // ডেমো হিসেবে দেওয়া, আপনার ডেটা সোর্স থেকে নিতে পারেন
+      originalPrice: "\$190.99",
       rating: rating,
-      reviewsCount: "7,932 reviews", // ডেমো রিভিউ
+      reviewsCount: "7,932 reviews",
       description: "Its simple and elegant shape makes it perfect for those of you who like minimalist clothes.",
-      imagePath: "assets/images/dress.png", // আপনার ইমেজের পাথ
+      imagePath: "assets/images/dress.png",
     );
     return InkWell(
-    onTap: () {
-    // প্রোডাক্টে ক্লিক করলে GetX এর মাধ্যমে ডিটেইলস পেজে ডাইনামিক অবজেক্ট পাঠানো হচ্ছে
-    Get.to(() => const HomeProductDetails(), arguments: currentProduct);
-    },
-    borderRadius: BorderRadius.circular(20),
-    child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-    Container(
-    height: imageHeight,
-    decoration: BoxDecoration(
-    color: Colors.grey.shade200,
-    borderRadius: BorderRadius.circular(20),
-    ),
-    alignment: Alignment.topRight,
-    padding: const EdgeInsets.all(12),
-    child: GestureDetector(
-    onTap: () {
-    controller.toggleWishlist(productData);
-    },
-    child: Container(
-    width: 32,
-    height: 32,
-    decoration: const BoxDecoration(
-    color: Colors.white,
-    shape: BoxShape.circle,
-    ),
-    child: Obx(() {
-    final isFav = controller.isFavorite(title);
-    return Icon(
-    isFav ? Icons.favorite : Icons.favorite_border,
-    color: isFav ? Colors.red : Colors.black87,
-    size: 16,
-    );
-    }),
-    ),
-    ),
-    ),
-    const SizedBox(height: 10),
-    Text(
-    title,
-    style: const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 14,
-    color: Colors.black,
-    ),
-    ),
-    const SizedBox(height: 2),
-    Text(
-    category,
-    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-    ),
-    const SizedBox(height: 6),
-    Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-    Text(
-    price,
-    style: const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 14,
-    color: Colors.black,
-    ),
-    ),
-    Row(
-    children: [
-    const Icon(Icons.star, size: 14, color: Colors.amber),
-    const SizedBox(width: 4),
-    Text(
-    rating,
-    style: const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 12,
-    color: Colors.black,
-    ),
-    ),
-    ],
-    ),
-    ],
-    ),
-    ],
-    ),
+      onTap: () {
+        Get.to(() => const HomeProductDetails(), arguments: currentProduct);
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: imageHeight,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            alignment: Alignment.topRight,
+            padding: const EdgeInsets.all(12),
+            child: GestureDetector(
+              onTap: () {
+                controller.toggleWishlist(productData);
+              },
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Obx(() {
+                  final isFav = controller.isFavorite(title);
+                  return Icon(
+                    isFav ? Icons.favorite : Icons.favorite_border,
+                    color: isFav ? Colors.red : Colors.black87,
+                    size: 16,
+                  );
+                }),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            category,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                price,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+              Row(
+                children: [
+                  const Icon(Icons.star, size: 14, color: Colors.amber),
+                  const SizedBox(width: 4),
+                  Text(
+                    rating,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
 
     return Column(
@@ -403,7 +399,6 @@ class HomePage extends GetView<HomeLogic> {
           padding: const EdgeInsets.all(12),
           child: GestureDetector(
             onTap: () {
-
               controller.toggleWishlist(productData);
             },
             child: Container(

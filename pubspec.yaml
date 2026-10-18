@@ -39,6 +39,9 @@ dependencies:
   shimmer: ^4.0.0
   google_fonts: ^9.0.0
   auto_validate: ^3.0.8
+  dio: ^5.11.1
+  get_storage: ^2.1.1
+  flutter_secure_storage: ^11.2.0
 
 
 dev_dependencies:

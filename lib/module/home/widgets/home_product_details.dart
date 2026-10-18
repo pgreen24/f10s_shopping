@@ -72,7 +72,9 @@ class HomeProductDetails extends GetView<HomeLogic> {
                               Icons.favorite,
                               color: Colors.red,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+
+                            },
                           ),
                         ),
                       ],
