@@ -67,14 +67,14 @@ class HomePage extends GetView<HomeLogic> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      "Rabeya Akter Lima",
-                      style: TextStyle(
+                    Obx(() => Text(
+                      controller.userName.value,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
-                    ),
+                    )),
                   ],
                 ),
                 Container(

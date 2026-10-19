@@ -1,12 +1,29 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class HomeLogic extends GetxController {
+  var userName = ''.obs;
+  var userEmail = ''.obs;
   var currentIndex = 0.obs;
-
+  final GetStorage storage = GetStorage();
   var wishlistItems = <Map<String, dynamic>>[].obs;
-
-
   var cartItems = <Map<String, dynamic>>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    userName.value = storage.read('userName') ?? 'User';
+    userEmail.value = storage.read('userEmail') ?? '';
+  }
+  void setUserData({required String name, required String email}) {
+    userName.value = name;
+    userEmail.value = email;
+
+    storage.write('userName', name);
+    storage.write('userEmail', email);
+  }
+
+
 
   void changePage(int index) {
     currentIndex.value = index;

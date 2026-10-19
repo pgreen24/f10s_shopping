@@ -2,6 +2,7 @@ import 'package:f10s_shopping/module/login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../utils/apps_color.dart';
+import '../../login/login_logic.dart';
 import '../home_logic.dart';
 import 'home_payment_method.dart';
 
@@ -11,6 +12,7 @@ class HomeProfile extends GetView<HomeLogic> {
 
   @override
   Widget build (BuildContext context){
+    Get.put(LoginLogic());
     final logic = Get.put(HomeLogic());
     return Material(
       child: SafeArea(
@@ -58,16 +60,28 @@ class HomeProfile extends GetView<HomeLogic> {
 
                     ),
                     const SizedBox(height: 15),
-                    Center(child: Text("Rabeya Akter Lima",style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),)),
-                    Center(child: Text("lima123@gmail.com",style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey,
-                    ),)),
+                    Center(
+                      child: Obx(() => Text(
+                        controller.userName.value,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      )),
+                    ),
+
+                    Center(
+                      child: Obx(() => Text(
+                        controller.userEmail.value,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.grey,
+                        ),
+                      )),
+                    ),
+
                     const SizedBox(height: 15),
                     Row(
                       children: [
