@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../utils/apps_color.dart';
 import '../../login/login_logic.dart';
 import '../home_logic.dart';
+import 'home_address_view.dart';
 import 'home_payment_method.dart';
 
 class HomeProfile extends GetView<HomeLogic> {
@@ -13,7 +14,7 @@ class HomeProfile extends GetView<HomeLogic> {
   @override
   Widget build (BuildContext context){
     Get.put(LoginLogic());
-    final logic = Get.put(HomeLogic());
+    final logic = Get.find<HomeLogic>();
     return Material(
       child: SafeArea(
         child: Column(
@@ -52,13 +53,18 @@ class HomeProfile extends GetView<HomeLogic> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    const Center(
-                    child:CircleAvatar(
-                      backgroundColor: Colors.black,
-                      radius: 55,
-                    ),
+                      Center(
+                        child: Obx(() {
+                          return CircleAvatar(
+                            backgroundColor: Colors.grey.shade200,
+                            radius: 55,
+                            backgroundImage: controller.userImageUrl.value.isNotEmpty
+                                ? NetworkImage(controller.userImageUrl.value)
+                                : null,
+                          );
+                        }),
+                      ),
 
-                    ),
                     const SizedBox(height: 15),
                     Center(
                       child: Obx(() => Text(
@@ -363,43 +369,51 @@ class HomeProfile extends GetView<HomeLogic> {
 
                           const SizedBox(height: 24),
 
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 48,
-                                height: 48,
-                                child: Card(
-                                  elevation: 0,
-                                  color: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: Colors.grey.shade200),
-                                    borderRadius: BorderRadius.circular(12),
+                          GestureDetector(
+                            onTap: () {
+
+                              Get.to(() => const AddressPage());
+                            },
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: Card(
+                                    elevation: 0,
+                                    color: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Colors.grey.shade200),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(Icons.location_on_outlined),
                                   ),
-                                  child: const Icon(Icons.location_on_outlined),
                                 ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Shipping Addresses",
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "2 addresses saved",
-                                      style: TextStyle(color: Colors.grey.shade500),
-                                    ),
-                                  ],
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Shipping Addresses",
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Obx(() => Text(
+                                        controller.userAddress.value,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(color: Colors.grey.shade500),
+                                      )),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Text("Default: Home", style: TextStyle(color: Colors.grey.shade500)),
-                              const SizedBox(width: 8),
-                              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
-                            ],
+                                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+                              ],
+                            ),
                           ),
+
+
 
                           const SizedBox(height: 24),
 
@@ -510,16 +524,6 @@ class HomeProfile extends GetView<HomeLogic> {
                                       ),
                                     )),
                                   ],
-                                ),
-                              ),
-
-                              Card(
-                                elevation: 1,
-                                color: Colors.grey.shade200,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  child: Text("1 active", style: TextStyle(fontSize: 12)),
                                 ),
                               ),
                               const SizedBox(width: 8),

@@ -87,9 +87,18 @@ class HomeWishlist extends GetView<HomeLogic> {
                             width: 100,
                             height: 135,
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
+                              color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(20),
+                              image: item['thumbnail'] != null && item['thumbnail'].toString().isNotEmpty
+                                  ? DecorationImage(
+                                image: NetworkImage(item['thumbnail']),
+                                fit: BoxFit.cover,
+                              )
+                                  : null,
                             ),
+                            child: item['thumbnail'] == null || item['thumbnail'].toString().isEmpty
+                                ? const Icon(Icons.image_not_supported, color: Colors.grey)
+                                : null,
                           ),
                           const SizedBox(width: 16),
 
@@ -140,7 +149,7 @@ class HomeWishlist extends GetView<HomeLogic> {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  item['price'] ?? '',
+                                  item['price'] != null ? '\$${item['price']}' : '',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,

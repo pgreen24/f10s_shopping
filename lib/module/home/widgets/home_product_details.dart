@@ -4,20 +4,25 @@ import 'package:f10s_shopping/module/home/home_logic.dart';
 
 import 'home_product_model.dart';
 
-
 class HomeProductDetails extends GetView<HomeLogic> {
-
   const HomeProductDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     final ProductModel product = Get.arguments;
 
+    final productData = {
+      'title': product.title,
+      'category': product.category,
+      'price': product.price,
+      'rating': product.rating,
+    };
 
-    RxString selectedSize = 'L'.obs;
-    RxInt selectedColorIndex = 0.obs;
     RxInt quantity = 1.obs;
+
+
+    double originalPrice =
+        product.price / (1 - (product.discountPercentage / 100));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -27,26 +32,24 @@ class HomeProductDetails extends GetView<HomeLogic> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
+              // Product Image Header
               Stack(
                 children: [
                   Container(
-                    height: 500,
+                    height: 420,
                     width: double.infinity,
                     decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(32),
                         bottomRight: Radius.circular(32),
                       ),
                       image: DecorationImage(
-                        image: AssetImage(
-                          product.imagePath,
-                        ),
-                        fit: BoxFit.cover,
+                        image: NetworkImage(product.thumbnail),
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
-
                   Positioned(
                     top: 50,
                     left: 20,
@@ -65,16 +68,19 @@ class HomeProductDetails extends GetView<HomeLogic> {
                             onPressed: () => Get.back(),
                           ),
                         ),
-                        CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-
-                            },
+                        GestureDetector(
+                          onTap: () => controller.toggleWishlist(productData),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Obx(() {
+                              final isFav = controller.isFavorite(
+                                product.title,
+                              );
+                              return Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: isFav ? Colors.red : Colors.black87,
+                              );
+                            }),
                           ),
                         ),
                       ],
@@ -83,12 +89,26 @@ class HomeProductDetails extends GetView<HomeLogic> {
                 ],
               ),
 
+              // Product Info Body
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Brand Name
+                    if (product.brand.isNotEmpty)
+                      Text(
+                        product.brand.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    const SizedBox(height: 4),
 
+                    // Title and Quantity Selector
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -96,13 +116,12 @@ class HomeProductDetails extends GetView<HomeLogic> {
                           child: Text(
                             product.title,
                             style: const TextStyle(
-                              fontSize: 26,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
                           ),
                         ),
-
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.grey.shade100,
@@ -134,164 +153,83 @@ class HomeProductDetails extends GetView<HomeLogic> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
 
-
+                    // Rating & Stock status
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.amber, size: 20),
                         const SizedBox(width: 4),
                         Text(
-                          product.rating,
+                          product.rating.toString(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          "(${product.reviewsCount})",
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontSize: 14,
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: product.stock > 10
+                                ? Colors.green.shade50
+                                : Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            product.availabilityStatus,
+                            style: TextStyle(
+                              color: product.stock > 10
+                                  ? Colors.green
+                                  : Colors.red,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                        children: [
-                          TextSpan(text: product.description),
-                          const TextSpan(
-                            text: " Read More...",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
+                    // Description
+                    const Text(
+                      "Description",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      product.description,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 14,
+                        height: 1.5,
                       ),
                     ),
                     const SizedBox(height: 24),
 
-
+                    // Warranty & Shipping Badges
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Choose Size",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: ['S', 'M', 'L', 'XL'].map((size) {
-                                return Obx(() {
-                                  bool isSelected = selectedSize.value == size;
-                                  return GestureDetector(
-                                    onTap: () => selectedSize.value = size,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(right: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 14,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Colors.black
-                                            : Colors.white,
-                                        border: Border.all(
-                                          color: Colors.grey.shade300,
-                                        ),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Text(
-                                        size,
-                                        style: TextStyle(
-                                          color: isSelected
-                                              ? Colors.white
-                                              : Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                });
-                              }).toList(),
-                            ),
-                          ],
+                        _buildInfoBadge(
+                          Icons.verified_user_outlined,
+                          product.warrantyInformation,
                         ),
-
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Color",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children:
-                                  [
-                                    Colors.grey,
-                                    Colors.brown.shade700,
-                                    Colors.black,
-                                  ].asMap().entries.map((entry) {
-                                    int idx = entry.key;
-                                    Color color = entry.value;
-                                    return Obx(() {
-                                      bool isSelected =
-                                          selectedColorIndex.value == idx;
-                                      return GestureDetector(
-                                        onTap: () =>
-                                            selectedColorIndex.value = idx,
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            right: 8,
-                                          ),
-                                          padding: const EdgeInsets.all(3),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: isSelected
-                                                  ? Colors.black
-                                                  : Colors.transparent,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: color,
-                                          ),
-                                        ),
-                                      );
-                                    });
-                                  }).toList(),
-                            ),
-                          ],
+                        const SizedBox(width: 12),
+                        _buildInfoBadge(
+                          Icons.local_shipping_outlined,
+                          product.shippingInformation,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 40),
 
+                    // Add to Cart Button
                     ElevatedButton(
                       onPressed: () {
                         controller.addToCart(product, quantity.value);
@@ -327,9 +265,12 @@ class HomeProductDetails extends GetView<HomeLogic> {
                               ),
                               children: [
                                 const TextSpan(text: "Add to Cart | "),
-                                TextSpan(text: product.price),
                                 TextSpan(
-                                  text: "  ${product.originalPrice}",
+                                  text: "\$${product.price.toStringAsFixed(2)}",
+                                ),
+                                TextSpan(
+                                  text:
+                                      "  \$${originalPrice.toStringAsFixed(2)}",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
@@ -342,12 +283,41 @@ class HomeProductDetails extends GetView<HomeLogic> {
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoBadge(IconData icon, String text) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.black87),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

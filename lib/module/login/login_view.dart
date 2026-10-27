@@ -1,7 +1,6 @@
 import 'package:f10s_shopping/module/login/login_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../utils/apps_color.dart';
 import '../shimmer/shimmer_view.dart';
 import '../sign_in/sign_in_view.dart';

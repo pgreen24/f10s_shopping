@@ -138,11 +138,7 @@ class HomeCart extends GetView<HomeLogic> {
                                 (cartItem['quantity'].value as int),
                             quantity: cartItem['quantity'].value,
                             imageColor: Color(cartItem['color'] ?? 0xFFE0E0E0),
-                            onItemPlaceholder: const Icon(
-                              Icons.shopping_bag_outlined,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
+                            imageUrl: cartItem['thumbnail'] ?? '',
                             onDecrease: () {
                               if (cartItem['quantity'].value > 1) {
                                 cartItem['quantity'].value--;
@@ -549,7 +545,7 @@ class HomeCart extends GetView<HomeLogic> {
     required double price,
     required int quantity,
     required Color imageColor,
-    required Widget onItemPlaceholder,
+    required String imageUrl,
     required VoidCallback onDecrease,
     required VoidCallback onIncrease,
     required VoidCallback onRemove,
@@ -569,7 +565,10 @@ class HomeCart extends GetView<HomeLogic> {
               color: imageColor,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Center(child: onItemPlaceholder),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(imageUrl, fit: BoxFit.contain),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:f10s_shopping/module/home/widgets/home_cart.dart';
 import 'package:f10s_shopping/module/home/widgets/home_navigation.dart';
 import 'package:f10s_shopping/module/home/widgets/home_product_details.dart';
@@ -5,8 +7,6 @@ import 'package:f10s_shopping/module/home/widgets/home_product_model.dart';
 import 'package:f10s_shopping/module/home/widgets/home_profile.dart';
 import 'package:f10s_shopping/module/home/widgets/home_search.dart';
 import 'package:f10s_shopping/module/home/widgets/home_wishlist.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import 'home_logic.dart';
 
@@ -46,6 +46,7 @@ class HomePage extends GetView<HomeLogic> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top Welcome Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -67,34 +68,51 @@ class HomePage extends GetView<HomeLogic> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Obx(() => Text(
-                      controller.userName.value,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    Obx(
+                      () => Text(
+                        controller.userName.value,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey.shade200,
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
-                  ),
-                  child: InkResponse(
+                Obx(
+                  () => GestureDetector(
                     onTap: () => controller.changePage(3),
-                    radius: 24,
-                    highlightColor: Colors.transparent,
-                    child: const Icon(Icons.person, color: Colors.grey),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey.shade200,
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                        image: controller.userImageUrl.isEmpty
+                            ? null
+                            : DecorationImage(
+                                image: NetworkImage(
+                                  controller.userImageUrl.value,
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      child: controller.userImageUrl.isEmpty
+                          ? const Icon(Icons.person, color: Colors.grey)
+                          : null,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
+
+            // Search and Filter Bar
             Row(
               children: [
                 Expanded(
@@ -107,9 +125,7 @@ class HomePage extends GetView<HomeLogic> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: () {
-                          Get.to(() => const HomeSearch());
-                        },
+                        onTap: () => Get.to(() => const HomeSearch()),
                         borderRadius: BorderRadius.circular(16),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -135,9 +151,7 @@ class HomePage extends GetView<HomeLogic> {
                     ),
                   ),
                 ),
-
                 const SizedBox(width: 12),
-
                 Container(
                   width: 52,
                   height: 52,
@@ -145,102 +159,81 @@ class HomePage extends GetView<HomeLogic> {
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(16),
-                      child: const Icon(
-                        Icons.tune,
-                        color: Colors.white,
-                        size: 20,
+                  child: const Icon(Icons.tune, color: Colors.white, size: 20),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Dynamic Category Chips
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Obx(
+                    () => Row(
+                  children: [
+                    _buildCategoryChip(label: "All Items", categoryKey: "all"),
+                    const SizedBox(width: 10),
+                    _buildCategoryChip(label: "Smartphones", categoryKey: "smartphones"),
+                    const SizedBox(width: 10),
+                    _buildCategoryChip(label: "Mobile Accessories", categoryKey: "mobile-accessories"),
+                    const SizedBox(width: 10),
+                    _buildCategoryChip(label: "Beauty", categoryKey: "beauty"),
+                    const SizedBox(width: 10),
+                    _buildCategoryChip(label: "Fragrances", categoryKey: "fragrances"),
+                    const SizedBox(width: 10),
+                    _buildCategoryChip(label: "Furniture", categoryKey: "furniture"),
+                    const SizedBox(width: 10),
+                    _buildCategoryChip(label: "Groceries", categoryKey: "groceries"),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Dynamic Product Grid with Loading Indicator
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 60),
+                    child: CircularProgressIndicator(color: Colors.black87),
+                  ),
+                );
+              }
+
+              List<ProductModel> productsToShow = controller.filteredProducts;
+
+              if (productsToShow.isEmpty) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 40),
+                    child: Text(
+                      "No products found!",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                );
+              }
 
-            const SizedBox(height: 20),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildCategoryChip(
-                    icon: Icons.grid_view,
-                    label: "All Items",
-                    isSelected: true,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildCategoryChip(
-                    icon: Icons.smartphone,
-                    label: "Phone",
-                    isSelected: false,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildCategoryChip(
-                    icon: Icons.shopping_bag_outlined,
-                    label: "T-Shirt",
-                    isSelected: false,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildCategoryChip(
-                    icon: Icons.accessibility_new,
-                    label: "Pants",
-                    isSelected: false,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildProductCard(
-                        imageHeight: 240,
-                        title: "Modern Light Clothes",
-                        category: "T-Shirt",
-                        price: "\$212.99",
-                        rating: "5.0",
-                      ),
-                      const SizedBox(height: 16),
-                      _buildProductCard(
-                        imageHeight: 180,
-                        title: "Classic Winter Hat",
-                        category: "Accessories",
-                        price: "\$95.00",
-                        rating: "4.8",
-                      ),
-                    ],
-                  ),
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: productsToShow.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.68,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildProductCard(
-                        imageHeight: 290,
-                        title: "Light Dress Bless",
-                        category: "Dress modern",
-                        price: "\$162.99",
-                        rating: "5.0",
-                      ),
-                      const SizedBox(height: 16),
-                      _buildProductCard(
-                        imageHeight: 150,
-                        title: "Summer Casual",
-                        category: "Dress",
-                        price: "\$120.50",
-                        rating: "4.9",
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                itemBuilder: (context, index) {
+                  return _buildProductCard(productsToShow[index]);
+                },
+              );
+            }),
           ],
         ),
       ),
@@ -248,118 +241,104 @@ class HomePage extends GetView<HomeLogic> {
   }
 
   Widget _buildCategoryChip({
-    required IconData icon,
     required String label,
-    required bool isSelected,
+    required String categoryKey,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.black87 : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
+    bool isSelected = controller.selectedCategory.value == categoryKey;
+    return GestureDetector(
+      onTap: () => controller.changeCategory(categoryKey),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.black87 : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
             color: isSelected ? Colors.white : Colors.black87,
-            size: 16,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
           ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black87,
-              fontWeight: FontWeight.w500,
-              fontSize: 13,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildProductCard({
-    required double imageHeight,
-    required String title,
-    required String category,
-    required String price,
-    required String rating,
-  }) {
+  Widget _buildProductCard(ProductModel product) {
     final productData = {
-      'title': title,
-      'category': category,
-      'price': price,
-      'rating': rating,
+      'title': product.title,
+      'category': product.category,
+      'price': product.price,
+      'rating': product.rating,
+      'thumbnail': product.thumbnail,
     };
-    final currentProduct = ProductModel(
-      title: title,
-      category: category,
-      price: price,
-      originalPrice: "\$190.99",
-      rating: rating,
-      reviewsCount: "7,932 reviews",
-      description: "Its simple and elegant shape makes it perfect for those of you who like minimalist clothes.",
-      imagePath: "assets/images/dress.png",
-    );
+
     return InkWell(
-      onTap: () {
-        Get.to(() => const HomeProductDetails(), arguments: currentProduct);
-      },
+      onTap: () => Get.to(() => const HomeProductDetails(), arguments: product),
       borderRadius: BorderRadius.circular(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: imageHeight,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            alignment: Alignment.topRight,
-            padding: const EdgeInsets.all(12),
-            child: GestureDetector(
-              onTap: () {
-                controller.toggleWishlist(productData);
-              },
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey.shade100),
+                image: DecorationImage(
+                  image: NetworkImage(product.thumbnail),
+                  fit: BoxFit.contain,
                 ),
-                child: Obx(() {
-                  final isFav = controller.isFavorite(title);
-                  return Icon(
-                    isFav ? Icons.favorite : Icons.favorite_border,
-                    color: isFav ? Colors.red : Colors.black87,
-                    size: 16,
-                  );
-                }),
+              ),
+              alignment: Alignment.topRight,
+              padding: const EdgeInsets.all(12),
+              child: GestureDetector(
+                onTap: () => controller.toggleWishlist(productData ),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Obx(() {
+                    final isFav = controller.isFavorite(product.title);
+                    return Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Colors.red : Colors.black87,
+                      size: 16,
+                    );
+                  }),
+                ),
               ),
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            title,
+            product.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 2),
           Text(
-            category,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+            product.category.toUpperCase(),
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                price,
+                "\$${product.price.toStringAsFixed(2)}",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -371,7 +350,7 @@ class HomePage extends GetView<HomeLogic> {
                   const Icon(Icons.star, size: 14, color: Colors.amber),
                   const SizedBox(width: 4),
                   Text(
-                    rating,
+                    product.rating.toString(),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -384,84 +363,6 @@ class HomePage extends GetView<HomeLogic> {
           ),
         ],
       ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: imageHeight,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          alignment: Alignment.topRight,
-          padding: const EdgeInsets.all(12),
-          child: GestureDetector(
-            onTap: () {
-              controller.toggleWishlist(productData);
-            },
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Obx(() {
-                final isFav = controller.isFavorite(title);
-                return Icon(
-                  isFav ? Icons.favorite : Icons.favorite_border,
-                  color: isFav ? Colors.red : Colors.black87,
-                  size: 16,
-                );
-              }),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          category,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-        ),
-        const SizedBox(height: 6),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              price,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Colors.black,
-              ),
-            ),
-            Row(
-              children: [
-                const Icon(Icons.star, size: 14, color: Colors.amber),
-                const SizedBox(width: 4),
-                Text(
-                  rating,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

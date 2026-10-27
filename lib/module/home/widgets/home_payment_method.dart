@@ -2,13 +2,23 @@ import 'package:f10s_shopping/module/home/home_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class HomePaymentMethod extends GetView<HomeLogic> {
   const HomePaymentMethod({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final logic = Get.put(HomeLogic());
+    final logic = Get.find<HomeLogic>();
+    final nameController = TextEditingController(text: logic.cardHolder.value);
+    final numberController = TextEditingController(
+      text: logic.cardNumber.value,
+    );
+    final expireController = TextEditingController(
+      text: logic.expiryDate.value,
+    );
+
+    nameController.text = logic.cardHolder.value;
+    numberController.text = logic.cardNumber.value;
+    expireController.text = logic.expiryDate.value;
 
     return Material(
       color: Colors.grey.shade50,
@@ -32,7 +42,7 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                       children: [
                         _buildRoundButton(
                           Icons.arrow_back_ios_new,
-                              () => Get.back(),
+                          () => Get.back(),
                         ),
                         const Text(
                           "Payment Methods",
@@ -54,7 +64,11 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                         children: [
                           _buildTabButton("Cards", Icons.credit_card, true),
                           const SizedBox(width: 12),
-                          _buildTabButton("Apple Pay", Icons.phone_iphone, false),
+                          _buildTabButton(
+                            "Apple Pay",
+                            Icons.phone_iphone,
+                            false,
+                          ),
                           const SizedBox(width: 12),
                           _buildTabButton("PayPal", Icons.payment, false),
                         ],
@@ -93,7 +107,10 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                                   ),
                                   borderRadius: BorderRadius.circular(6),
 
-                                  border: Border.all(color: const Color(0xFF8B6508), width: 1.5),
+                                  border: Border.all(
+                                    color: const Color(0xFF8B6508),
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: Stack(
                                   children: [
@@ -103,8 +120,14 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                                         height: 35,
                                         decoration: const BoxDecoration(
                                           border: Border(
-                                            left: BorderSide(color: Colors.black, width: 1.5),
-                                            right: BorderSide(color: Colors.black, width: 1.5),
+                                            left: BorderSide(
+                                              color: Colors.black,
+                                              width: 1.5,
+                                            ),
+                                            right: BorderSide(
+                                              color: Colors.black,
+                                              width: 1.5,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -115,8 +138,14 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                                         height: 15,
                                         decoration: const BoxDecoration(
                                           border: Border(
-                                            top: BorderSide(color: Colors.black, width: 1.5),
-                                            bottom: BorderSide(color: Colors.black, width: 1.5),
+                                            top: BorderSide(
+                                              color: Colors.black,
+                                              width: 1.5,
+                                            ),
+                                            bottom: BorderSide(
+                                              color: Colors.black,
+                                              width: 1.5,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -127,21 +156,30 @@ class HomePaymentMethod extends GetView<HomeLogic> {
 
                               Row(
                                 children: [
-                                  const Icon(Icons.wifi, color: Colors.white, size: 20),
+                                  const Icon(
+                                    Icons.wifi,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
                                   const SizedBox(width: 12),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.15),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: const Text(
-                                      "VISA",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        letterSpacing: 1.2,
+                                    child: Obx(
+                                      () => Text(
+                                        logic.cardType.value.toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          letterSpacing: 1.2,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -152,8 +190,10 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                           // Live Card Number Binding
                           Obx(() {
                             String rawNum = logic.cardNumber.value;
-                            // Format number or show placeholder masking
-                            String formatted = rawNum.isEmpty ? "•••• •••• •••• 2143" : rawNum;
+
+                            String formatted = rawNum.isEmpty
+                                ? "•••• •••• •••• 2143"
+                                : rawNum;
                             return Text(
                               formatted,
                               style: const TextStyle(
@@ -173,17 +213,23 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                                 children: [
                                   const Text(
                                     "CARDHOLDER",
-                                    style: TextStyle(color: Colors.grey, fontSize: 9, letterSpacing: 1),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 9,
+                                      letterSpacing: 1,
+                                    ),
                                   ),
                                   const SizedBox(height: 2),
-                                  Obx(() => Text(
-                                    logic.cardHolder.value,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
+                                  Obx(
+                                    () => Text(
+                                      logic.cardHolder.value,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
                                     ),
-                                  )),
+                                  ),
                                 ],
                               ),
                               Column(
@@ -191,17 +237,23 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                                 children: [
                                   const Text(
                                     "EXPIRES",
-                                    style: TextStyle(color: Colors.grey, fontSize: 9, letterSpacing: 1),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 9,
+                                      letterSpacing: 1,
+                                    ),
                                   ),
                                   const SizedBox(height: 2),
-                                  Obx(() => Text(
-                                    logic.expiryDate.value,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
+                                  Obx(
+                                    () => Text(
+                                      logic.expiryDate.value,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
                                     ),
-                                  )),
+                                  ),
                                 ],
                               ),
                             ],
@@ -212,10 +264,17 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                     const SizedBox(height: 24),
 
                     // Cardholder Name Input
-                    const Text("Cardholder Name",
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
+                    const Text(
+                      "Cardholder Name",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     TextField(
+                      controller: nameController,
                       onChanged: logic.updateCardHolder,
                       decoration: _inputDecoration(
                         hintText: "Enter Name",
@@ -224,17 +283,23 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Card Number Input (Triggers Live Preview)
-                    const Text("Card Number",
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
+                    // Card Number Input
+                    const Text(
+                      "Card Number",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     TextField(
+                      controller: numberController,
                       keyboardType: TextInputType.number,
                       onChanged: logic.updateCardNumber,
                       decoration: _inputDecoration(
                         hintText: "4242 •••• •••• 2143",
                         prefixIcon: Icons.credit_card,
-                        suffixIcon: Icons.camera_alt_outlined,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -246,10 +311,17 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("Expires",
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
+                              const Text(
+                                "Expires",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
                               const SizedBox(height: 8),
                               TextField(
+                                controller: expireController,
                                 onChanged: logic.updateExpiryDate,
                                 decoration: _inputDecoration(
                                   hintText: "08/26",
@@ -265,11 +337,22 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text("CVV / CVC",
-                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
-                                  Icon(Icons.help_outline, size: 16, color: Colors.grey.shade400),
+                                  const Text(
+                                    "CVV / CVC",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: Colors.grey.shade400,
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -290,7 +373,10 @@ class HomePaymentMethod extends GetView<HomeLogic> {
 
                     // Default Card Switch Box
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
@@ -304,7 +390,11 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                               color: Colors.grey.shade100,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.verified_outlined, size: 20, color: Colors.black87),
+                            child: const Icon(
+                              Icons.verified_outlined,
+                              size: 20,
+                              color: Colors.black87,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           const Expanded(
@@ -313,20 +403,29 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                               children: [
                                 Text(
                                   "Set as default card",
-                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                                 Text(
                                   "Use for single-click checkouts",
-                                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          Obx(() => Switch.adaptive(
-                            value: logic.isDefault.value,
-                            onChanged: (val) => logic.isDefault.value = val,
-                            activeColor: Colors.black,
-                          )),
+                          Obx(
+                            () => Switch.adaptive(
+                              value: logic.isDefault.value,
+                              onChanged: (val) => logic.isDefault.value = val,
+                              activeColor: Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -337,7 +436,11 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.lock_outline, size: 14, color: Colors.grey),
+                          Icon(
+                            Icons.lock_outline,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             "End-to-end 256–bit encrypted security",
@@ -369,7 +472,10 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                             SizedBox(width: 8),
                             Text(
                               "Save & Add Card",
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
@@ -381,7 +487,11 @@ class HomePaymentMethod extends GetView<HomeLogic> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.credit_card_outlined, size: 16, color: Colors.black54),
+                        const Icon(
+                          Icons.credit_card_outlined,
+                          size: 16,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 8),
                         const Text(
                           "2 existing payment methods linked",
@@ -464,7 +574,9 @@ class HomePaymentMethod extends GetView<HomeLogic> {
       hintText: hintText,
       hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
       prefixIcon: Icon(prefixIcon, color: Colors.grey.shade500, size: 20),
-      suffixIcon: suffixIcon != null ? Icon(suffixIcon, color: Colors.grey.shade500, size: 20) : null,
+      suffixIcon: suffixIcon != null
+          ? Icon(suffixIcon, color: Colors.grey.shade500, size: 20)
+          : null,
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

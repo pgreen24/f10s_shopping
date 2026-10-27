@@ -1,5 +1,5 @@
 import 'package:f10s_shopping/provider/api_service.dart';
-import 'package:f10s_shopping/module/home/home_view.dart'; // আপনার হোম পেজটি ইমপোর্ট করুন
+import 'package:f10s_shopping/module/home/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -33,31 +33,40 @@ class LoginLogic extends GetxController {
     }
 
     try {
+      Map<String, String>? userDetails = await ApiService().getUsernameByEmail(
+          emailInput);
 
-      String? actualUsername = await ApiService().getUsernameByEmail(emailInput);
-
-      if (actualUsername == null) {
+      if (userDetails == null) {
         Get.snackbar("Login Failed", "No user found with this email address",
             snackPosition: SnackPosition.TOP);
         return;
       }
 
+      String actualUsername = userDetails['username'] ?? '';
+      String fetchedMaidenName = userDetails['maidenName'] ?? '';
+      String fetchedAddress = userDetails['address'] ?? '';
+      String bankCardNumber = userDetails['bankCardNumber'] ?? '';
+      String bankCardExpire = userDetails['bankCardExpire'] ?? '';
+      String bankCardType = userDetails['bankCardType'] ?? 'VISA';
 
       final dio.Response? response = await ApiService().apiPostcall(
         username: actualUsername,
         password: passwords,
       );
 
-
-
       if (response?.statusCode == 200) {
         String accessToken = response?.data['accessToken'] ?? '';
         String firstName = response?.data['firstName'] ?? '';
         String lastName = response?.data['lastName'] ?? '';
-        String maidenName = response?.data['maidenName'] ?? '';
         String email = response?.data['email'] ?? emailInput;
-        String fullName = "$firstName $maidenName $lastName".trim();
-        if(fullName.isEmpty) fullName = actualUsername ?? "User";
+        String userImageUrl = response?.data['image'] ?? '';
+        var bank = response?.data['bank'];
+        print("Bank Data From APi: $bank");
+
+
+
+        String fullName = "$firstName $lastName $fetchedMaidenName";
+        if (fullName.isEmpty) fullName = actualUsername;
 
         await storage.write('isLoggedIn', true);
         await secureStorage.write(key: 'token', value: accessToken);
@@ -65,19 +74,34 @@ class LoginLogic extends GetxController {
         await secureStorage.write(key: 'saved_password', value: passwords);
         await storage.write('userName', fullName);
         await storage.write('userEmail', email);
+        await storage.write('userProfileImage', userImageUrl);
+        await storage.write('userAddress', fetchedAddress);
+        await storage.write('userCardNumber', bankCardNumber);
+        await storage.write('userCardExpire', bankCardExpire);
+        await storage.write('userCardType', bankCardType);
 
-        final homeLogic = Get.put(HomeLogic());
-        homeLogic.setUserData(name: fullName, email: email);
 
-        Get.snackbar("Success", "Login Successful", snackPosition: SnackPosition.TOP);
+
+
+        final homeLogic = Get.put(HomeLogic(),permanent: true);
+        homeLogic.setUserData(name: fullName,
+            email: email,
+            imageUrl: userImageUrl,
+            address: fetchedAddress,
+            bankCardNumber: bankCardNumber,
+            bankCardExpire: bankCardExpire,
+            bankCardType: bankCardType,);
+
+        Get.snackbar(
+            "Success", "Login Successful", snackPosition: SnackPosition.TOP);
         Get.offAll(() => const HomePage());
-      }
-
-      else {
-        Get.snackbar("Login Failed", "Invalid password. Please try again.", snackPosition: SnackPosition.TOP);
+      } else {
+        Get.snackbar("Login Failed", "Invalid password. Please try again.",
+            snackPosition: SnackPosition.TOP);
       }
     } catch (e) {
-      Get.snackbar("Error", "Something went wrong: $e", snackPosition: SnackPosition.TOP);
+      Get.snackbar("Error", "Something went wrong: $e",
+          snackPosition: SnackPosition.TOP);
     }
   }
 }
