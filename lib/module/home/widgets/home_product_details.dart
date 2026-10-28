@@ -16,6 +16,7 @@ class HomeProductDetails extends GetView<HomeLogic> {
       'category': product.category,
       'price': product.price,
       'rating': product.rating,
+      'thumbnail': product.thumbnail ?? '',
     };
 
     RxInt quantity = 1.obs;

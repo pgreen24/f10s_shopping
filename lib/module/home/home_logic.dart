@@ -25,6 +25,7 @@ class HomeLogic extends GetxController {
   var allProductsList = <ProductModel>[].obs;
   var isLoading = false.obs;
   final ApiService _apiService = ApiService();
+  var searchQuery = ''.obs;
 
 
 
@@ -162,6 +163,7 @@ class HomeLogic extends GetxController {
         'price': parsedPrice,
         'quantity': 1.obs,
         'color': 0xFFE0E0E0,
+        'thumbnail': item['thumbnail'] ?? '',
       });
       Get.snackbar("Success", "Added to your cart successfully!",
           snackPosition: SnackPosition.TOP);
@@ -215,11 +217,25 @@ class HomeLogic extends GetxController {
       isLoading.value = false;
     }
   }
+
   List<ProductModel> get filteredProducts {
-    if (selectedCategory.value == 'all') {
-      return allProductsList;
+    List<ProductModel> tempProducts = allProductsList;
+    if (selectedCategory.value != 'all') {
+      tempProducts = tempProducts.where((product) {
+        return product.category.toString().toLowerCase().trim() ==
+            selectedCategory.value.toLowerCase().trim();
+      }).toList();
     }
-    return allProductsList.where((p) => p.category.toLowerCase() == selectedCategory.value.toLowerCase()).toList();
+
+
+    if (searchQuery.value.isNotEmpty) {
+      tempProducts = tempProducts.where((product) {
+        final titleMatch = product.title.toString().toLowerCase().contains(searchQuery.value.toLowerCase());
+        return titleMatch;
+      }).toList();
+    }
+
+    return tempProducts;
   }
 
   void changeCategory(String categoryKey) async {
@@ -227,27 +243,32 @@ class HomeLogic extends GetxController {
 
     try {
       isLoading.value = true;
-      dynamic response;
 
-      if (categoryKey == 'all') {
-        response = await _apiService.AllProduct();
-      } else {
 
-        response = await _apiService.searchProduct(categoryKey);
-      }
+      final response = await _apiService.AllProduct();
 
       if (response != null && response.statusCode == 200) {
         var productsData = response.data['products'] as List;
-        allProductsList.value = ProductModel.fromJsonList(productsData);
+
+        List<ProductModel> totalProducts = ProductModel.fromJsonList(productsData);
+
+        if (categoryKey == 'all') {
+
+          allProductsList.value = totalProducts;
+        } else {
+
+          allProductsList.value = totalProducts.where((product) {
+            return product.category.toString().toLowerCase().trim() ==
+                categoryKey.toLowerCase().trim();
+          }).toList();
+        }
       }
     } catch (e) {
       Get.snackbar("Error", "Failed to load products: $e");
     } finally {
       isLoading.value = false;
+      allProductsList.refresh();
     }
-
   }
-
-
-
 }
+

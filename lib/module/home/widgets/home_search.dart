@@ -1,10 +1,11 @@
 import 'package:f10s_shopping/module/home/home_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:f10s_shopping/module/home/home_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'home_product_details.dart';
 
 class HomeSearch extends GetView<HomeLogic> {
   const HomeSearch({super.key});
@@ -22,7 +23,10 @@ class HomeSearch extends GetView<HomeLogic> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
-                    onPressed: () => Get.back(),
+                    onPressed: () {
+                      controller.searchQuery.value = '';
+                      Get.back();
+                    },
                   ),
                   Expanded(
                     child: Container(
@@ -42,77 +46,70 @@ class HomeSearch extends GetView<HomeLogic> {
                           suffixIcon: IconButton(
                             icon: Icon(Icons.cancel, color: Colors.grey.shade400, size: 18),
                             onPressed: () {
-
+                              controller.searchQuery.value = '';
                             },
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(vertical: 11),
                         ),
+                        onChanged: (value) {
+                          controller.searchQuery.value = value.trim();
+                        },
                         onSubmitted: (value) {
+                          controller.searchQuery.value = value.trim();
                         },
                       ),
+
                     ),
                   ),
                 ],
               ),
             ),
-
-
             Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              child: Obx(() {
+                // ১. যদি সার্চ কুয়েরি খালি থাকে, তবে প্রোডাক্ট লিস্ট দেখাবে না
+                if (controller.searchQuery.value.isEmpty) {
+                  return const Center(
+                    child: Text("Search for your favorite products!", style: TextStyle(color: Colors.grey)),
+                  );
+                }
 
-                      Row(
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                        children: [
-                          const Text(
-                            "Recent Searches",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                          ),
-                          const SizedBox(width: 12),
-                          TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text("Clear All", style: TextStyle(color: Colors.red.shade400, fontSize: 13)),
-                          ),
-                        ],
+                if (controller.filteredProducts.isEmpty) {
+                  return const Center(
+                    child: Text("No products found!", style: TextStyle(color: Colors.grey)),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: controller.filteredProducts.length,
+                  itemBuilder: (context, index) {
+                    final product = controller.filteredProducts[index];
+                    return ListTile(
+                      leading: Image.network(
+                        product.thumbnail ?? '',
+                        width: 50,
+                        height: 50,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.image),
                       ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          _buildChip("T-Shirt"),
-                          _buildChip("Sneakers"),
-                          _buildChip("Smart Watch"),
-                          _buildChip("Backpack"),
-                        ],
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // --- Trending Section ---
-                      const Text(
-                        "Trending Right Now",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTrendingItem(Icons.trending_up, "Winter Jackets Premium"),
-                      _buildTrendingItem(Icons.trending_up, "Wireless Bluetooth Earbuds"),
-                      _buildTrendingItem(Icons.trending_up, "Minimalist Leather Wallet"),
-                    ],
-                  ),
-                ),
-              ),
+                      title: Text(product.title ?? ''),
+                      subtitle: Text("\$${product.price ?? '0'}"),
+                      onTap: () {
+                        Get.to(() => const HomeProductDetails(), arguments: product);
+                      },
+                    );
+                  },
+                );
+              }),
             ),
+
+
+
+
+
           ],
         ),
       ),

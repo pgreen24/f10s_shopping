@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../home_logic.dart';
-import  'home_checkout_shimmer.dart';
+import 'home_checkout_shimmer.dart';
 import 'home_payment_method.dart';
+import 'home_product_details.dart';
+import 'home_product_model.dart';
 
 class HomeCart extends GetView<HomeLogic> {
   const HomeCart({super.key});
@@ -42,13 +45,15 @@ class HomeCart extends GetView<HomeLogic> {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          Obx(() => Text(
-                            "${controller.cartItems.length} items",
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade500,
+                          Obx(
+                            () => Text(
+                              "${controller.cartItems.length} items",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade500,
+                              ),
                             ),
-                          )),
+                          ),
                         ],
                       ),
                       _buildRoundButton(Icons.more_horiz, () {}),
@@ -131,26 +136,44 @@ class HomeCart extends GetView<HomeLogic> {
                         final cartItem = controller.cartItems[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 14.0),
-                          child: Obx(() => _buildCartItem(
-                            title: cartItem['title'] ?? '',
-                            subtitle: cartItem['subtitle'] ?? '',
-                            price: (cartItem['price'] as double) *
-                                (cartItem['quantity'].value as int),
-                            quantity: cartItem['quantity'].value,
-                            imageColor: Color(cartItem['color'] ?? 0xFFE0E0E0),
-                            imageUrl: cartItem['thumbnail'] ?? '',
-                            onDecrease: () {
-                              if (cartItem['quantity'].value > 1) {
-                                cartItem['quantity'].value--;
-                              }
-                            },
-                            onIncrease: () {
-                              cartItem['quantity'].value++;
-                            },
-                            onRemove: () {
-                              controller.removeFromCart(index);
-                            },
-                          )),
+                          child: Obx(
+                            () => _buildCartItem(
+                              title: cartItem['title'] ?? '',
+                              subtitle: cartItem['subtitle'] ?? '',
+                              price:
+                                  (cartItem['price'] as double) *
+                                  (cartItem['quantity'].value as int),
+                              quantity: cartItem['quantity'].value,
+                              imageColor: Color(
+                                cartItem['color'] ?? 0xFFE0E0E0,
+                              ),
+                              imageUrl: cartItem['thumbnail'] ?? '',
+                              onDecrease: () {
+                                if (cartItem['quantity'].value > 1) {
+                                  cartItem['quantity'].value--;
+                                }
+                              },
+                              onIncrease: () {
+                                cartItem['quantity'].value++;
+                              },
+                              onRemove: () {
+                                controller.removeFromCart(index);
+                              },
+                              onTap: () {
+                                final originalProduct = controller.allProductsList.firstWhere(
+                                      (p) => p.title.toString().toLowerCase().trim() == cartItem['title'].toString().toLowerCase().trim(),
+                                      orElse: () => ProductModel(
+                                        title: cartItem['title'] ?? '',
+                                        thumbnail: cartItem['thumbnail'] ?? '',
+                                        price: cartItem['price'] ?? 0.0,
+                                        category: cartItem['subtitle'] ?? '',
+                                      ),
+                                    );
+                                Get.to(() => const HomeProductDetails(), arguments: originalProduct,
+                                );
+                              },
+                            ),
+                          ),
                         );
                       },
                     );
@@ -216,7 +239,6 @@ class HomeCart extends GetView<HomeLogic> {
                     ),
                   ),
                   const SizedBox(height: 24),
-
                   // Payment Method Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,8 +253,7 @@ class HomeCart extends GetView<HomeLogic> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Get.to(() => const HomePaymentMethod());
+                        onTap: () { Get.to(() => const HomePaymentMethod());
                         },
                         child: const Text(
                           "Change",
@@ -246,7 +267,6 @@ class HomeCart extends GetView<HomeLogic> {
                     ],
                   ),
                   const SizedBox(height: 12),
-
                   // Payment Method Card
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -293,7 +313,6 @@ class HomeCart extends GetView<HomeLogic> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   // Order Details Section
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -317,17 +336,20 @@ class HomeCart extends GetView<HomeLogic> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Obx(() => Text(
-                              "Subtotal (${controller.cartItems.length} items)",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade500,
+                            Obx(
+                              () => Text(
+                                "Subtotal (${controller.cartItems.length} items)",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade500,
+                                ),
                               ),
-                            )),
+                            ),
                             Obx(() {
                               double subtotal = 0;
                               for (var item in controller.cartItems) {
-                                subtotal += (item['price'] as double) *
+                                subtotal +=
+                                    (item['price'] as double) *
                                     (item['quantity'].value as int);
                               }
                               return Text(
@@ -433,7 +455,6 @@ class HomeCart extends GetView<HomeLogic> {
                 ],
               ),
             ),
-
             // Floating Bottom Checkout Bar
             Positioned(
               bottom: 105,
@@ -470,7 +491,7 @@ class HomeCart extends GetView<HomeLogic> {
                         ),
                         const SizedBox(height: 2),
                         Obx(
-                              () => Text(
+                          () => Text(
                             "\$${controller.totalPrice.toStringAsFixed(2)}",
                             style: const TextStyle(
                               fontSize: 20,
@@ -549,129 +570,152 @@ class HomeCart extends GetView<HomeLogic> {
     required VoidCallback onDecrease,
     required VoidCallback onIncrease,
     required VoidCallback onRemove,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 85,
-            height: 85,
-            decoration: BoxDecoration(
-              color: imageColor,
-              borderRadius: BorderRadius.circular(16),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 85,
+              height: 85,
+              decoration: BoxDecoration(
+                color: imageColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child:
+                    imageUrl.isNotEmpty &&
+                        Uri.tryParse(imageUrl)?.hasAbsolutePath == true
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                          );
+                        },
+                      )
+                    : const Icon(Icons.image_not_supported, color: Colors.grey),
+              ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(imageUrl, fit: BoxFit.contain),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      // Working Remove Button
+                      GestureDetector(
+                        onTap: onRemove,
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey.shade400,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "\$${price.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontSize: 16,
                           color: Colors.black,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    // Working Remove Button
-                    GestureDetector(
-                      onTap: onRemove,
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.grey.shade400,
-                          size: 18,
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF6F6F6),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: onDecrease,
+                                icon: const Icon(
+                                  Icons.remove,
+                                  size: 14,
+                                  color: Colors.black,
+                                ),
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.all(6),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                child: Text(
+                                  "$quantity",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: onIncrease,
+                                icon: const Icon(
+                                  Icons.add,
+                                  size: 14,
+                                  color: Colors.black,
+                                ),
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.all(6),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "\$${price.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF6F6F6),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: onDecrease,
-                            icon: const Icon(
-                              Icons.remove,
-                              size: 14,
-                              color: Colors.black,
-                            ),
-                            constraints: const BoxConstraints(),
-                            padding: const EdgeInsets.all(6),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Text(
-                              "$quantity",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: onIncrease,
-                            icon: const Icon(
-                              Icons.add,
-                              size: 14,
-                              color: Colors.black,
-                            ),
-                            constraints: const BoxConstraints(),
-                            padding: const EdgeInsets.all(6),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

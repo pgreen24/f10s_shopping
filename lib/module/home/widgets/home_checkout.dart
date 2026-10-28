@@ -64,7 +64,10 @@ class HomeCheckout extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 20.0),
                             child: Obx(
                               () => _buildCartItem(
-                                imageUrl: 'https://unsplash.com',
+                                imageColor: Color(
+                                  cartItem['color'] ?? 0xFFE0E0E0,
+                                ),
+                                imageUrl: cartItem['thumbnail'] ?? '',
                                 title: cartItem['title'] ?? '',
                                 subtitle: cartItem['subtitle'] ?? '',
                                 price:
@@ -199,6 +202,7 @@ class HomeCheckout extends StatelessWidget {
     required String subtitle,
     required String price,
     required int quantity,
+    required Color imageColor,
     required VoidCallback onDecrease,
     required VoidCallback onIncrease,
   }) {
@@ -240,7 +244,6 @@ class HomeCheckout extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.more_horiz, color: Colors.black),
                 ],
               ),
               const SizedBox(height: 4),
