@@ -31,27 +31,36 @@ class HomeProfile extends GetView<HomeLogic> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildRoundButton(Icons.arrow_back_ios_new, () {
-                          controller.changePage(2);
-                        }),
-                        Column(
-                          children: [
-                            const Text(
-                              "Account Profile",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                    SizedBox(
+                      height: 56,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: _buildRoundButton(Icons.arrow_back_ios_new, () {
+                              controller.changePage(2);
+                            }),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  "Account Profile",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        _buildRoundButton(Icons.tune, () {}),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
+
                     const SizedBox(height: 20),
                       Center(
                         child: Obx(() {
@@ -346,15 +355,7 @@ class HomeProfile extends GetView<HomeLogic> {
                                 ),
                               ),
 
-                              Card(
-                                elevation: 0,
-                                color: Colors.grey.shade200,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  child: Text("1 active", style: TextStyle(fontSize: 12)),
-                                ),
-                              ),
+
                               const SizedBox(width: 8),
                               GestureDetector(
                                 onTap: () => controller.changePage(1),
@@ -628,7 +629,7 @@ class HomeProfile extends GetView<HomeLogic> {
                         height: 56,
                         child: ElevatedButton(
                           onPressed: () {
-                            Get.to(() => const LoginPage());
+                            Get.to(() => const LoginView());
 
                           },
                           style: ElevatedButton.styleFrom(

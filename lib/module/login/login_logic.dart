@@ -60,42 +60,40 @@ class LoginLogic extends GetxController {
         String lastName = response?.data['lastName'] ?? '';
         String email = response?.data['email'] ?? emailInput;
         String userImageUrl = response?.data['image'] ?? '';
-        var bank = response?.data['bank'];
-        print("Bank Data From APi: $bank");
-
-
 
         String fullName = "$firstName $lastName $fetchedMaidenName";
         if (fullName.isEmpty) fullName = actualUsername;
 
-        await storage.write('isLoggedIn', true);
-        await secureStorage.write(key: 'token', value: accessToken);
-        await secureStorage.write(key: 'saved_email', value: emailInput);
-        await secureStorage.write(key: 'saved_password', value: passwords);
-        await storage.write('userName', fullName);
-        await storage.write('userEmail', email);
-        await storage.write('userProfileImage', userImageUrl);
-        await storage.write('userAddress', fetchedAddress);
-        await storage.write('userCardNumber', bankCardNumber);
-        await storage.write('userCardExpire', bankCardExpire);
-        await storage.write('userCardType', bankCardType);
 
+        await Future.wait([
+          storage.write('isLoggedIn', true),
+          secureStorage.write(key: 'token', value: accessToken),
+          secureStorage.write(key: 'saved_email', value: emailInput),
+          secureStorage.write(key: 'saved_password', value: passwords),
+          storage.write('userName', fullName),
+          storage.write('userEmail', email),
+          storage.write('userProfileImage', userImageUrl),
+          storage.write('userAddress', fetchedAddress),
+          storage.write('userCardNumber', bankCardNumber),
+          storage.write('userCardExpire', bankCardExpire),
+          storage.write('userCardType', bankCardType),
+        ]);
 
+        final homeLogic = Get.put(HomeLogic(), permanent: true);
+        homeLogic.setUserData(
+          name: fullName,
+          email: email,
+          imageUrl: userImageUrl,
+          address: fetchedAddress,
+          bankCardNumber: bankCardNumber,
+          bankCardExpire: bankCardExpire,
+          bankCardType: bankCardType,
+        );
 
-
-        final homeLogic = Get.put(HomeLogic(),permanent: true);
-        homeLogic.setUserData(name: fullName,
-            email: email,
-            imageUrl: userImageUrl,
-            address: fetchedAddress,
-            bankCardNumber: bankCardNumber,
-            bankCardExpire: bankCardExpire,
-            bankCardType: bankCardType,);
-
-        Get.snackbar(
-            "Success", "Login Successful", snackPosition: SnackPosition.TOP);
+        Get.snackbar("Success", "Login Successful", snackPosition: SnackPosition.TOP);
         Get.offAll(() => const HomePage());
-      } else {
+      }
+      else {
         Get.snackbar("Login Failed", "Invalid password. Please try again.",
             snackPosition: SnackPosition.TOP);
       }

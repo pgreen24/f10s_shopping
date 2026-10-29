@@ -23,9 +23,9 @@ class HomePage extends GetView<HomeLogic> {
       const HomeProfile(),
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
+    return Material(
+      color: Colors.white,
+      child: Stack(
         children: [
           Obx(() => pages[controller.currentIndex.value]),
           const CustomBottomBar(),
@@ -36,7 +36,7 @@ class HomePage extends GetView<HomeLogic> {
 
   Widget _buildHomeBody() {
     return SafeArea(
-      child: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.only(
           left: 20.0,
           right: 20.0,
@@ -46,7 +46,6 @@ class HomePage extends GetView<HomeLogic> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Welcome Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -112,7 +111,6 @@ class HomePage extends GetView<HomeLogic> {
             ),
             const SizedBox(height: 20),
 
-            // Search and Filter Bar
             Row(
               children: [
                 Expanded(
@@ -152,24 +150,15 @@ class HomePage extends GetView<HomeLogic> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(Icons.tune, color: Colors.white, size: 20),
-                ),
+
               ],
             ),
             const SizedBox(height: 20),
 
-            // Dynamic Category Chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Obx(
-                    () => Row(
+            Obx(
+                  () => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
                   children: [
                     _buildCategoryChip(label: "All Items", categoryKey: "all"),
                     const SizedBox(width: 10),
@@ -218,9 +207,6 @@ class HomePage extends GetView<HomeLogic> {
                     _buildCategoryChip(label: "Womens Shoes", categoryKey: "womens-shoes"),
                     const SizedBox(width: 10),
                     _buildCategoryChip(label: "Womens Watches", categoryKey: "womens-watches"),
-
-
-
                   ],
                 ),
               ),
@@ -228,49 +214,52 @@ class HomePage extends GetView<HomeLogic> {
 
             const SizedBox(height: 24),
 
-            // Dynamic Product Grid with Loading Indicator
-            Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 60),
-                    child: CircularProgressIndicator(color: Colors.black87),
-                  ),
-                );
-              }
 
-              List<ProductModel> productsToShow = controller.filteredProducts;
-
-              if (productsToShow.isEmpty) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 40),
-                    child: Text(
-                      "No products found!",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 60),
+                        child: CircularProgressIndicator(color: Colors.black87),
                       ),
-                    ),
-                  ),
-                );
-              }
-
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: productsToShow.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.68,
-                ),
-                itemBuilder: (context, index) {
-                  return _buildProductCard(productsToShow[index]);
-                },
-              );
-            }),
+                    );
+                  }
+                  List productsToShow = controller.filteredProducts;
+                  if (productsToShow.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: Text(
+                          "No products found!",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(), // Parent ScrollView হ্যান্ডেল করবে
+                    itemCount: productsToShow.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.68,
+                        ),
+                    itemBuilder: (context, index) {
+                      return _buildProductCard(productsToShow[index]);
+                    },
+                  );
+                }),
+              ),
+            ),
           ],
         ),
       ),
@@ -291,8 +280,7 @@ class HomePage extends GetView<HomeLogic> {
           borderRadius: BorderRadius.circular(25),
         ),
         child: Text(
-          label,
-          style: TextStyle(
+          label, style: TextStyle(
             color: isSelected ? Colors.white : Colors.black87,
             fontWeight: FontWeight.w600,
             fontSize: 13,
@@ -310,7 +298,6 @@ class HomePage extends GetView<HomeLogic> {
       'rating': product.rating,
       'thumbnail': product.thumbnail,
     };
-
     return InkWell(
       onTap: () => Get.to(() => const HomeProductDetails(), arguments: product),
       borderRadius: BorderRadius.circular(20),
@@ -331,7 +318,7 @@ class HomePage extends GetView<HomeLogic> {
               alignment: Alignment.topRight,
               padding: const EdgeInsets.all(12),
               child: GestureDetector(
-                onTap: () => controller.toggleWishlist(productData ),
+                onTap: () => controller.toggleWishlist(productData),
                 child: Container(
                   width: 32,
                   height: 32,

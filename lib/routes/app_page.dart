@@ -26,12 +26,12 @@ class AppPage {
     ),
     GetPage(
       name: AppRoutes.login,
-      page: () => const LoginPage (),
+      page: () => const LoginView (),
       binding: LoginBinding(),
     ),
     GetPage(
       name: AppRoutes.signin,
-      page: () => const SignInPage (),
+      page: () => const SignInView (),
       binding: SignInBinding(),
     ),
     GetPage(

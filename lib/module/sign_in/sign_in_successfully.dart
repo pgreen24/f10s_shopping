@@ -2,14 +2,26 @@ import 'package:f10s_shopping/module/sign_in/sign_in_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'data_model/signup_data_model.dart';
+
 import '../home/home_logic.dart';
 import '../home/home_view.dart';
+
 class SignInSuccessfully extends GetView<SignInLogic> {
   const SignInSuccessfully({super.key});
 
   @override
   Widget build(BuildContext context) {
     Get.put(HomeLogic());
+
+    final SignupDataModel userData = Get.arguments as SignupDataModel;
+
+    String getInitials(String firstName, String lastName) {
+      String f = firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
+      String l = lastName.isNotEmpty ? lastName[0].toUpperCase() : '';
+      return '$f$l';
+    }
+
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.5),
       body: Center(
@@ -29,14 +41,16 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [
-                          const ContainerDot(),
                           const SizedBox(width: 6),
                           Text(
                             "Member Access Granted",
@@ -58,12 +72,17 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                           color: Colors.grey.shade100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close, size: 18, color: Colors.black87),
+                        child: const Icon(
+                          Icons.close,
+                          size: 18,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
+
 
                 Stack(
                   alignment: Alignment.center,
@@ -89,22 +108,9 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                         size: 36,
                       ),
                     ),
-                    Positioned(
-                      top: 20,
-                      right: 28,
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.amber.shade200,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
-
 
                 const Text(
                   "Welcome to F10S Shopping!",
@@ -118,7 +124,7 @@ class SignInSuccessfully extends GetView<SignInLogic> {
 
 
                 Text(
-                  "Welcome aboard, Rabeya! Your curated fashion journey begins now with exclusive access and tailored curations.",
+                  "Welcome board, ${userData.firstName}! Your curated fashion journey begins now with exclusive access and tailored curations.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
@@ -127,6 +133,7 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
 
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -141,9 +148,12 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                           CircleAvatar(
                             radius: 22,
                             backgroundColor: Colors.black,
-                            child: const Text(
-                              "RAL",
-                              style: TextStyle(
+                            child: Text(
+                              getInitials(
+                                userData.firstName,
+                                userData.lastName,
+                              ),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -155,9 +165,10 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "RABEYA AKTER LIMA",
-                                  style: TextStyle(
+                                Text(
+                                  "${userData.firstName} ${userData.lastName}"
+                                      .toUpperCase(),
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
                                     color: Colors.black,
@@ -165,7 +176,7 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  "albert.stevano@example.com",
+                                  userData.email,
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey.shade600,
@@ -175,7 +186,10 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade300,
                               borderRadius: BorderRadius.circular(12),
@@ -193,6 +207,7 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                       ),
                       const SizedBox(height: 12),
 
+
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -207,7 +222,11 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                                 color: Colors.amber.shade100,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(Icons.card_giftcard, color: Colors.brown, size: 20),
+                              child: const Icon(
+                                Icons.card_giftcard,
+                                color: Colors.brown,
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -225,17 +244,22 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                                   const SizedBox(height: 2),
                                   RichText(
                                     text: TextSpan(
-                                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                                      children: [
-                                        const TextSpan(text: "Applied at checkout (Code: "),
-                                        const TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                      children: const [
+                                        TextSpan(
+                                          text: "Applied at checkout (Code: ",
+                                        ),
+                                        TextSpan(
                                           text: "WELCOME1...",
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
                                           ),
                                         ),
-                                        const TextSpan(text: ")"),
+                                        TextSpan(text: ")"),
                                       ],
                                     ),
                                   ),
@@ -250,22 +274,31 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                 ),
                 const SizedBox(height: 16),
 
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.local_shipping_outlined, size: 16, color: Colors.grey),
+                    const Icon(
+                      Icons.local_shipping_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       "Complimentary Shipping",
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     const Icon(Icons.replay_30, size: 16, color: Colors.grey),
                     const SizedBox(width: 6),
                     Text(
                       "30-Day Free Returns",
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                   ],
                 ),
@@ -276,36 +309,28 @@ class SignInSuccessfully extends GetView<SignInLogic> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(() => const HomePage());
+                      final SignupDataModel userData = Get.arguments as SignupDataModel;
+                      final HomeLogic homeLogic = Get.find<HomeLogic>();
+                      homeLogic.setUserData(
+                        name: "${userData.firstName} ${userData.lastName}",
+                        email: userData.email,
+                      );
+                      Get.offAll(() => const HomePage());
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                      elevation: 0,
-                    ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "Start Shopping",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text("Start Shopping", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         SizedBox(width: 8),
                         Icon(Icons.arrow_forward, size: 18),
                       ],
                     ),
                   ),
+
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   child: Text(
                     "Complete Profile Details",
                     style: TextStyle(
@@ -319,22 +344,6 @@ class SignInSuccessfully extends GetView<SignInLogic> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ContainerDot extends StatelessWidget {
-  const ContainerDot({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 6,
-      height: 6,
-      decoration: const BoxDecoration(
-        color: Colors.black,
-        shape: BoxShape.circle,
       ),
     );
   }

@@ -1,10 +1,6 @@
 import 'package:f10s_shopping/module/home/home_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:f10s_shopping/module/home/home_logic.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import 'home_product_details.dart';
 
 class HomeSearch extends GetView<HomeLogic> {

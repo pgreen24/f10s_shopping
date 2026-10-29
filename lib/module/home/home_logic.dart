@@ -6,6 +6,7 @@ import '../../provider/api_service.dart';
 import '../login/data_model/user_data_model.dart';
 
 class HomeLogic extends GetxController {
+  final double discount = 24.00;
   var userName = ''.obs;
   var userEmail = ''.obs;
   var userImageUrl = ''.obs;
@@ -49,24 +50,26 @@ class HomeLogic extends GetxController {
     String address = '',
     String bankCardNumber = '',
     String bankCardExpire = '',
-    String bankCardType = '',}) {
-    userName.value = name;
+    String bankCardType = '',
+  }) {
+    userName.value = name.trim().isEmpty ? 'User' : name;
     userEmail.value = email;
     userImageUrl.value = imageUrl;
     userAddress.value = address;
     cardNumber.value = bankCardNumber;
-    cardHolder.value = name;
+    cardHolder.value = name.trim().isEmpty ? 'User' : name;
     expiryDate.value = bankCardExpire;
     cardType.value = bankCardType.isEmpty ? 'VISA' : bankCardType;
 
-    storage.write('userName', name);
+    storage.write('userName', userName.value);
     storage.write('userEmail', email);
     storage.write('userProfileImage', imageUrl);
     storage.write('userAddress', address);
     storage.write('userCardNumber', bankCardNumber);
     storage.write('userCardExpire', bankCardExpire);
-    storage.write('userCardType', bankCardType);
+    storage.write('userCardType', cardType.value);
   }
+
   void updateUserData(UserDataModel newModel) {
     userData.value = newModel;
 
@@ -94,13 +97,12 @@ class HomeLogic extends GetxController {
     currentIndex.value = index;
   }
 
-
   var quantity1 = 4.obs;
   var quantity2 = 1.obs;
   var quantity3 = 1.obs;
 
 
-  final double discount = 24.00;
+
 
 
   double get totalPrice {

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../provider/api_service.dart';
-import '../login/data_model/user_data_model.dart';
+import 'data_model/signup_data_model.dart';
 
 class SignInLogic extends GetxController {
-
   final RxBool isLoading = false.obs;
 
-  Future<bool> registerUser({
-    required UserDataModel userModel,
+  Future<SignupDataModel?> registerUser({
+    required SignupDataModel userModel,
     required String password,
   }) async {
     try {
       isLoading.value = true;
-
 
       final response = await ApiService().signupUser(
         firstName: userModel.firstName,
@@ -22,9 +20,8 @@ class SignInLogic extends GetxController {
         email: userModel.email,
         gender: userModel.gender.toLowerCase(),
         password: password,
-        age: userModel.age,
+        age: userModel.age is int ? userModel.age : (int.tryParse(userModel.age.toString()) ?? 0),
       );
-
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.snackbar(
@@ -34,17 +31,23 @@ class SignInLogic extends GetxController {
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
-        return true;
+
+        return SignupDataModel.fromJson(response.data);
       } else {
-        Get.snackbar("Error", "Signup failed. Please try again.");
-        return false;
+        Get.snackbar("Error", "Signup failed. Please try again.",
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return null;
       }
     } catch (e) {
-      Get.snackbar("Error", "Something went wrong: $e");
-      return false;
+      Get.snackbar("Error", "Something went wrong: $e",
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return null;
     } finally {
       isLoading.value = false;
     }
   }
 }
+
+
+
 

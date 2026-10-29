@@ -8,7 +8,6 @@ class SignupDataModel {
     this.maidenName = '',
     this.age = 0,
     this.gender = '',
-
   });
 
   final int id;

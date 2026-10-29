@@ -28,37 +28,51 @@ class HomeCart extends GetView<HomeLogic> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Top Bar
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildRoundButton(Icons.arrow_back_ios_new, () {
-                        controller.changePage(0);
-                      }),
-                      Column(
-                        children: [
-                          const Text(
-                            "My Cart",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Obx(
-                            () => Text(
-                              "${controller.cartItems.length} items",
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade500,
+                  SizedBox(
+                    height: 56,
+                    child: Stack(
+                      children: [
+
+
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: _buildRoundButton(Icons.arrow_back_ios_new, () {
+                            controller.changePage(0);
+                          }),
+                        ),
+
+
+                        Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "My Cart",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 2),
+                              Obx(
+                                    () => Text(
+                                  "${controller.cartItems.length} items",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      _buildRoundButton(Icons.more_horiz, () {}),
-                    ],
+                        ),
+
+                      ],
+                    ),
                   ),
+
                   const SizedBox(height: 20),
 
                   // Free Shipping Progress Container

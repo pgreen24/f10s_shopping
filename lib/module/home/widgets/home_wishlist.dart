@@ -21,23 +21,39 @@ class HomeWishlist extends GetView<HomeLogic> {
                 horizontal: 20.0,
                 vertical: 10.0,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildRoundButton(Icons.arrow_back_ios_new, () {
-                    controller.changePage(1);
-                  }),
-                  const Text(
-                    "Wishlist",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+              child: SizedBox(
+                height: 56,
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _buildRoundButton(Icons.arrow_back_ios_new, () {
+                        controller.changePage(1);
+                      }),
                     ),
-                  ),
-                  _buildRoundButton(Icons.linear_scale, () {}),
-                ],
-              ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            "Wishlist",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+
+                        ],
+                      ),
+                    ),
+
+                  ],
+                ),
+              )
+
             ),
             const SizedBox(height: 20),
 
