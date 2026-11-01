@@ -17,10 +17,11 @@ class LoginLogic extends GetxController {
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
+    emailController.clear();
+    passwordController.clear();
     super.onClose();
   }
+
 
   Future<void> logInApiCall() async {
     final String emailInput = emailController.text.trim();

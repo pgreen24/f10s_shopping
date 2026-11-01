@@ -12,6 +12,9 @@ import '../module/login/login_view.dart';
 import '../module/shimmer/shimmer_view.dart';
 import 'app_routes.dart';
 class AppPage {
+
+  AppPage._();
+
   static final initial = AppRoutes.splash;
   static final routes = [
     GetPage(

@@ -1,6 +1,8 @@
-import 'package:f10s_shopping/module/login/login_view.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../routes/app_routes.dart';
 import '../../../utils/apps_color.dart';
 import '../../login/login_logic.dart';
 import '../home_logic.dart';
@@ -577,7 +579,7 @@ class HomeProfile extends GetView<HomeLogic> {
                               Obx(() => Switch.adaptive(
                                 value: logic.isDefault.value,
                                 onChanged: (val) => logic.isDefault.value = val,
-                                activeColor: Colors.black,
+
                               )),
                             ],
                           ),
@@ -628,10 +630,7 @@ class HomeProfile extends GetView<HomeLogic> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Get.to(() => const LoginView());
-
-                          },
+                          onPressed: () => Get.offAllNamed(AppRoutes.login),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppsColor.whiteGray,
                             elevation: 0,
