@@ -15,7 +15,7 @@ class SignInMobile  extends StatelessWidget {
               child: Padding(padding: const EdgeInsets.only(left: 10), child: SignInPage()),
             ),
             const Center(
-              child: Padding(padding: EdgeInsets.only(bottom: 30), child: CupertinoActivityIndicator()),
+              child: Padding(padding: EdgeInsets.only(bottom: 30),),
             ),
           ],
         ),
