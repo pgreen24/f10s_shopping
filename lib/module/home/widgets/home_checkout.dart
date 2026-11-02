@@ -20,24 +20,41 @@ class HomeCheckout extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildRoundButton(
-                    Icons.arrow_back_ios_new,
-                    iconSize: 16,
-                    onTap: () => Get.back(),
-                  ),
-                  const Text(
-                    'Checkout',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+              SizedBox(
+                height: 56,
+                child: Stack(
+                  children: [
+
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child:_buildRoundButton(
+                        Icons.arrow_back_ios_new,
+                        iconSize: 16,
+                        onTap: () => Get.back(),
+                      ),
                     ),
-                  ),
-                  _buildRoundButton(Icons.linear_scale, onTap: () {}),
-                ],
+
+
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            "My Cart",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  ],
+                ),
               ),
               const SizedBox(height: 30),
 

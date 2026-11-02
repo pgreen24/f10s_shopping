@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
+import '../../../routes/app_routes.dart';
 import '../home_view.dart';
 
 class OderComplete extends GetView<HomeLogic> {
@@ -29,10 +30,7 @@ class OderComplete extends GetView<HomeLogic> {
               Align(
                 alignment: Alignment.topRight,
                 child: GestureDetector(
-                  onTap: () {
-                    Get.back();
-                    controller.changePage(0);
-                  },
+                  onTap: () => Get.offAllNamed(AppRoutes.home),
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

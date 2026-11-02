@@ -266,18 +266,6 @@ class HomeCart extends GetView<HomeLogic> {
                           letterSpacing: 0.5,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () { Get.to(() => const HomePaymentMethod());
-                        },
-                        child: const Text(
-                          "Change",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -319,10 +307,19 @@ class HomeCart extends GetView<HomeLogic> {
                           ),
                         ),
                         const Spacer(),
-                        Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.grey.shade400,
-                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const HomePaymentMethod()),
+                            );
+                          },
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.grey.shade400,
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -381,7 +378,7 @@ class HomeCart extends GetView<HomeLogic> {
                         // Promotion
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children:[
                             Text(
                               "Promotion (F10S)",
                               style: TextStyle(
@@ -505,7 +502,7 @@ class HomeCart extends GetView<HomeLogic> {
                         ),
                         const SizedBox(height: 2),
                         Obx(
-                          () => Text(
+                              () => Text(
                             "\$${controller.totalPrice.toStringAsFixed(2)}",
                             style: const TextStyle(
                               fontSize: 20,
@@ -516,38 +513,44 @@ class HomeCart extends GetView<HomeLogic> {
                         ),
                       ],
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(() => const CheckoutShimmerPage());
-                      },
-                      child: Container(
-                        height: 54,
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF111111),
-                          borderRadius: BorderRadius.circular(27),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              "Checkout",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                    Obx(() {
+                      final isCartEmpty = controller.cartItems.isEmpty;
+
+                      return GestureDetector(
+                        onTap: isCartEmpty
+                            ? null
+                            : () {
+                          Get.to(() => const CheckoutShimmerPage());
+                        },
+                        child: Container(
+                          height: 54,
+                          padding: const EdgeInsets.symmetric(horizontal: 28),
+                          decoration: BoxDecoration(
+                            color: isCartEmpty ? Colors.grey.shade400 : const Color(0xFF111111),
+                            borderRadius: BorderRadius.circular(27),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                "Checkout",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ],
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),
