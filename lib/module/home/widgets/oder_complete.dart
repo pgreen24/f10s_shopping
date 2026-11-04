@@ -4,13 +4,20 @@ import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_routes.dart';
-import '../home_view.dart';
 
 class OderComplete extends GetView<HomeLogic> {
   const OderComplete({super.key});
 
   @override
   Widget build(BuildContext context) {
+    controller.addCompletedOrder();
+    final int itemsCount = controller.cartItems.length;
+    final double finalTotalPrice = controller.totalPrice;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.cartItems.clear();
+    });
+
     final DateTime now = DateTime.now();
     final String orderDateStr = DateFormat('EEE, MMM d').format(now);
 
@@ -48,7 +55,6 @@ class OderComplete extends GetView<HomeLogic> {
 
               const SizedBox(height: 20),
 
-
               Container(
                 width: 70,
                 height: 70,
@@ -60,7 +66,7 @@ class OderComplete extends GetView<HomeLogic> {
               ),
               const SizedBox(height: 24),
 
-              // Order Title & Subtitle
+// Order Title & Subtitle
               const Text(
                 "Order Confirmed!",
                 style: TextStyle(
@@ -84,7 +90,7 @@ class OderComplete extends GetView<HomeLogic> {
               ),
               const SizedBox(height: 30),
 
-              // Main Receipt / Status Card
+// Main Receipt / Status Card
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -94,7 +100,7 @@ class OderComplete extends GetView<HomeLogic> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Order Reference Section
+// Order Reference Section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -121,7 +127,7 @@ class OderComplete extends GetView<HomeLogic> {
                             ),
                           ],
                         ),
-                        // Copy Button
+// Copy Button
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -151,7 +157,7 @@ class OderComplete extends GetView<HomeLogic> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Order Stepper Status
+// Order Stepper Status
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -166,7 +172,7 @@ class OderComplete extends GetView<HomeLogic> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Estimated Arrival Details
+// Estimated Arrival Details
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -226,7 +232,7 @@ class OderComplete extends GetView<HomeLogic> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Payment Method Details
+// Payment Method Details
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -235,8 +241,7 @@ class OderComplete extends GetView<HomeLogic> {
                       ),
                       child: const Row(
                         children: [
-                          Icon(
-                            Icons.credit_card,
+                          Icon(Icons.credit_card,
                             color: Colors.black,
                             size: 22,
                           ),
@@ -252,7 +257,7 @@ class OderComplete extends GetView<HomeLogic> {
                                     color: Colors.grey,
                                   ),
                                 ),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text(
                                   "Visa •••• 2143",
                                   style: TextStyle(
@@ -276,7 +281,6 @@ class OderComplete extends GetView<HomeLogic> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -322,7 +326,7 @@ class OderComplete extends GetView<HomeLogic> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        "+${controller.cartItems.length}",
+                                        "+$itemsCount",
                                         style: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
@@ -340,7 +344,7 @@ class OderComplete extends GetView<HomeLogic> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${controller.cartItems.length} F10S Pieces",
+                                  "$itemsCount F10S Pieces",
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
@@ -356,7 +360,6 @@ class OderComplete extends GetView<HomeLogic> {
                               ],
                             ),
                           ),
-
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -367,14 +370,12 @@ class OderComplete extends GetView<HomeLogic> {
                                   color: Colors.grey.shade400,
                                 ),
                               ),
-                              Obx(
-                                () => Text(
-                                  "\$${controller.totalPrice.toStringAsFixed(2)}",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
+                              Text(
+                                "\$${finalTotalPrice.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -386,7 +387,7 @@ class OderComplete extends GetView<HomeLogic> {
                 ),
               ),
               const Spacer(),
-              // Bottom Tracking & Utility Buttons
+// Bottom Tracking & Utility Buttons
               Container(
                 width: double.infinity,
                 height: 60,
@@ -435,8 +436,7 @@ class OderComplete extends GetView<HomeLogic> {
       ),
     );
   }
-
-  // Stepper UI helper methods
+// Stepper UI helper methods
   Widget _buildStepIndicator(String title, bool isCompleted) {
     return Column(
       children: [
@@ -467,7 +467,6 @@ class OderComplete extends GetView<HomeLogic> {
       ],
     );
   }
-
   Widget _buildStepLine(bool isCompleted) {
     return Expanded(
       child: Container(
@@ -477,7 +476,6 @@ class OderComplete extends GetView<HomeLogic> {
       ),
     );
   }
-
   Widget _buildBottomOutlineButton(IconData icon, String label) {
     return Container(
       height: 50,
@@ -502,21 +500,4 @@ class OderComplete extends GetView<HomeLogic> {
       ),
     );
   }
-
 }
-Widget _buildRoundButton(IconData icon, VoidCallback onTap) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade200, width: 1),
-      ),
-      child: Icon(icon, color: Colors.black, size: 18),
-    ),
-  );
-}
-

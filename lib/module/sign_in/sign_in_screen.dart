@@ -6,7 +6,7 @@ import 'sign_in_logic.dart';
 import 'sign_in_successfully.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({Key? key}) : super(key: key);
+  const SignInPage({super.key});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -21,8 +21,7 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
 
   @override
@@ -89,8 +88,9 @@ class _SignInPageState extends State<SignInPage> {
                   hintText: "Enter your full name",
                   controller: _nameController,
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return "Name cannot be empty";
+                    }
                     return null;
                   },
                 ),
@@ -101,11 +101,13 @@ class _SignInPageState extends State<SignInPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return "Email cannot be empty";
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value))
+                    }
+                    if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return "Enter a valid email address";
+                    }
                     return null;
                   },
                 ),
@@ -127,10 +129,12 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return "Password cannot be empty";
-                    if (value.length < 6)
+                    }
+                    if (value.length < 6) {
                       return "Password must be at least 6 characters";
+                    }
                     return null;
                   },
                 ),
@@ -153,10 +157,12 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return "Confirm password cannot be empty";
-                    if (value != _passwordController.text)
+                    }
+                    if (value != _passwordController.text) {
                       return "Passwords do not match";
+                    }
                     return null;
                   },
                 ),
@@ -206,8 +212,9 @@ class _SignInPageState extends State<SignInPage> {
                   controller: _ageController,
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return "Age cannot be empty";
+                    }
                     return null;
                   },
                 ),

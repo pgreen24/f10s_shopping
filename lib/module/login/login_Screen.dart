@@ -62,7 +62,7 @@ class LoginPage extends GetView<LoginLogic> {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Text(
-                  "Email address",
+                  "User Name",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -75,10 +75,10 @@ class LoginPage extends GetView<LoginLogic> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextField(
-                  controller: controller.emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  controller: controller.usernameController,
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    hintText: 'Enter your email address',
+                    hintText: 'Enter your user name',
                     hintStyle: const TextStyle(
                       color: AppsColor.darkerGrey,
                       fontSize: 14,

@@ -1,5 +1,6 @@
 import 'package:f10s_shopping/provider/api_service.dart';
 import 'package:f10s_shopping/module/home/home_view.dart';
+import 'package:f10s_shopping/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,92 +11,106 @@ import '../home/home_logic.dart';
 
 class LoginLogic extends GetxController {
   final RxBool isObscureText = true.obs;
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GetStorage storage = GetStorage();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   @override
-  void onClose() {
-    emailController.clear();
-    passwordController.clear();
-    super.onClose();
+  void onInit() {
+    super.onInit();
+    _loadSavedCredentials();
   }
 
+  Future<void> _loadSavedCredentials() async {
+    try {
+
+      String? lastUser = await secureStorage.read(key: 'last_logged_in_user');
+
+      if (lastUser != null) {
+        usernameController.text = lastUser;
+
+        String? savedPassword = await secureStorage.read(key: 'saved_password_$lastUser');
+        if (savedPassword != null) {
+          passwordController.text = savedPassword;
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading saved credentials: $e");
+    }
+  }
 
   Future<void> logInApiCall() async {
-    final String emailInput = emailController.text.trim();
+    final String usernameInput = usernameController.text.trim();
     final String passwords = passwordController.text.trim();
 
-    if (emailInput.isEmpty || passwords.isEmpty) {
-      Get.snackbar("Error", "Email and Password cannot be empty",
+    if (usernameInput.isEmpty || passwords.isEmpty) {
+      Get.snackbar("Error", "Username and Password cannot be empty",
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
     try {
-      Map<String, String>? userDetails = await ApiService().getUsernameByEmail(
-          emailInput);
-
-      if (userDetails == null) {
-        Get.snackbar("Login Failed", "No user found with this email address",
-            snackPosition: SnackPosition.TOP);
-        return;
-      }
-
-      String actualUsername = userDetails['username'] ?? '';
-      String fetchedMaidenName = userDetails['maidenName'] ?? '';
-      String fetchedAddress = userDetails['address'] ?? '';
-      String bankCardNumber = userDetails['bankCardNumber'] ?? '';
-      String bankCardExpire = userDetails['bankCardExpire'] ?? '';
-      String bankCardType = userDetails['bankCardType'] ?? 'VISA';
-
       final dio.Response? response = await ApiService().apiPostcall(
-        username: actualUsername,
+        username: usernameInput,
         password: passwords,
       );
 
-      if (response?.statusCode == 200) {
+
+      if (response?.statusCode == 200 && response?.data != null) {
+        String userId = (response?.data['id'] ?? '').toString();
         String accessToken = response?.data['accessToken'] ?? '';
-        String firstName = response?.data['firstName'] ?? '';
-        String lastName = response?.data['lastName'] ?? '';
-        String email = response?.data['email'] ?? emailInput;
-        String userImageUrl = response?.data['image'] ?? '';
+        String firstName = (response?.data['firstName'] ?? '').toString();
+        String lastName = (response?.data['lastName'] ?? '').toString();
+        String userImageUrl = (response?.data['image'] ?? '').toString();
+        String fetchedEmail = (response?.data['email'] ?? '').toString();
 
-        String fullName = "$firstName $lastName $fetchedMaidenName";
-        if (fullName.isEmpty) fullName = actualUsername;
+        String fetchedMaidenName = '';
+        String fetchedAddress = '';
+        String bankCardNumber = '';
+        String bankCardExpire = '';
+        String bankCardType = 'VISA';
 
 
-        await Future.wait([
-          storage.write('isLoggedIn', true),
-          secureStorage.write(key: 'token', value: accessToken),
-          secureStorage.write(key: 'saved_email', value: emailInput),
-          secureStorage.write(key: 'saved_password', value: passwords),
-          storage.write('userName', fullName),
-          storage.write('userEmail', email),
-          storage.write('userProfileImage', userImageUrl),
-          storage.write('userAddress', fetchedAddress),
-          storage.write('userCardNumber', bankCardNumber),
-          storage.write('userCardExpire', bankCardExpire),
-          storage.write('userCardType', bankCardType),
-        ]);
+        if (fetchedEmail.isNotEmpty) {
+          Map<String, String>? userDetails = await ApiService().getUsernameByEmail(fetchedEmail);
+          if (userDetails != null) {
+            fetchedMaidenName = userDetails['maidenName'] ?? '';
+            fetchedAddress = userDetails['address'] ?? '';
+            bankCardNumber = userDetails['bankCardNumber'] ?? '';
+            bankCardExpire = userDetails['bankCardExpire'] ?? '';
+            bankCardType = userDetails['bankCardType'] ?? 'VISA';
+          }
+        }
 
-        final homeLogic = Get.put(HomeLogic(), permanent: true);
-        homeLogic.setUserData(
-          name: fullName,
-          email: email,
-          imageUrl: userImageUrl,
-          address: fetchedAddress,
-          bankCardNumber: bankCardNumber,
-          bankCardExpire: bankCardExpire,
-          bankCardType: bankCardType,
-        );
+        String fullName = "$firstName $lastName $fetchedMaidenName".trim();
+        if (fullName.isEmpty) fullName = usernameInput;
+
+        String userKey = userId;
+
+        await storage.write('isLoggedIn', true);
+        await storage.write('currentUserKey', userKey);
+        await storage.write('last_logged_in_user', userKey);
+
+        await secureStorage.write(key: 'token_$userKey', value: accessToken);
+        await secureStorage.write(key: 'last_logged_in_user', value: usernameInput);
+        await secureStorage.write(key: 'saved_password_$userKey', value: passwords);
+
+        await storage.write('userName_$userKey', fullName);
+        await storage.write('userEmail_$userKey', fetchedEmail);
+        await storage.write('userProfileImage_$userKey', userImageUrl);
+        await storage.write('userAddress_$userKey', fetchedAddress);
+        await storage.write('userCardNumber_$userKey', bankCardNumber);
+        await storage.write('userCardExpire_$userKey', bankCardExpire);
+        await storage.write('userCardType_$userKey', bankCardType);
+        await storage.save();
 
         Get.snackbar("Success", "Login Successful", snackPosition: SnackPosition.TOP);
-        Get.offAll(() => const HomePage());
-      }
-      else {
-        Get.snackbar("Login Failed", "Invalid password. Please try again.",
+        Get.offAllNamed(AppRoutes.home);
+
+
+    } else {
+        Get.snackbar("Login Failed", "Invalid username or password. Please try again.",
             snackPosition: SnackPosition.TOP);
       }
     } catch (e) {
@@ -103,4 +118,16 @@ class LoginLogic extends GetxController {
           snackPosition: SnackPosition.TOP);
     }
   }
+
+
+  @override
+  void onClose() {
+    usernameController.clear();
+    passwordController.clear();
+    super.onClose();
+  }
 }
+
+
+
+

@@ -1,12 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../routes/app_routes.dart';
 import '../../../utils/apps_color.dart';
 import '../../login/login_logic.dart';
 import '../home_logic.dart';
 import 'home_address_view.dart';
+import 'home_orders_history.dart';
 import 'home_payment_method.dart';
 
 class HomeProfile extends GetView<HomeLogic> {
@@ -360,7 +362,7 @@ class HomeProfile extends GetView<HomeLogic> {
 
                               const SizedBox(width: 8),
                               GestureDetector(
-                                onTap: () => controller.changePage(1),
+                                onTap: () => Get.to(() => const OrderHistoryView()),
                                 child: Icon(
                                   Icons.arrow_forward_ios,
                                   size: 16,
@@ -445,25 +447,33 @@ class HomeProfile extends GetView<HomeLogic> {
                                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        ColoredBox(
-                                          color: Colors.blue.shade800,
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                            child: Text(
-                                              "VISA",
-                                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                    Obx(() {
+                                      String cardNum = controller.cardNumber.value;
+                                      String lastFourDigits = cardNum.length >= 4
+                                          ? cardNum.substring(cardNum.length - 4)
+                                          : "••••";
+
+                                      return Row(
+                                        children: [
+                                          ColoredBox(
+                                            color: Colors.blue.shade800,
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              child: Text(
+                                                controller.cardType.value.toUpperCase(),
+                                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text("•••• 2143", style: TextStyle(color: Colors.grey.shade500)),
-                                      ],
-                                    ),
+                                          const SizedBox(width: 8),
+                                          Text("•••• $lastFourDigits", style: TextStyle(color: Colors.grey.shade500)),
+                                        ],
+                                      );
+                                    }),
                                   ],
                                 ),
                               ),
+
 
 
                               GestureDetector(
@@ -630,7 +640,12 @@ class HomeProfile extends GetView<HomeLogic> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: () => Get.offAllNamed(AppRoutes.login),
+                          onPressed: () {
+                            final storage = GetStorage();
+                            storage.write('isLoggedIn', false);
+                            storage.remove('currentUserKey');
+                            Get.offAllNamed(AppRoutes.login);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppsColor.whiteGray,
                             elevation: 0,
@@ -649,8 +664,6 @@ class HomeProfile extends GetView<HomeLogic> {
                         ),
                       ),
                     ),
-
-
                   ],
                 ),
               ),

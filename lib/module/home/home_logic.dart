@@ -27,22 +27,54 @@ class HomeLogic extends GetxController {
   var isLoading = false.obs;
   final ApiService _apiService = ApiService();
   var searchQuery = ''.obs;
-
+  var orders = <Map<String, dynamic>>[].obs;
 
 
   @override
   void onInit() {
     super.onInit();
-    userName.value = storage.read('userName') ?? 'User';
-    userEmail.value = storage.read('userEmail') ?? '';
-    userImageUrl.value = storage.read('userProfileImage') ?? '';
-    userAddress.value = storage.read('userAddress') ?? '';
-    cardNumber.value = storage.read('userCardNumber') ?? '';
-    cardHolder.value = storage.read('userName') ?? 'User';
-    expiryDate.value = storage.read('userCardExpire') ?? '';
-    cardType.value = storage.read('userCardType') ?? 'VISA';
+    loadCurrentUserData();
     fetchProducts();
   }
+  @override
+  void onReady() {
+    super.onReady();
+    loadCurrentUserData();
+  }
+  void loadCurrentUserData() {
+
+    String userKey = storage.read('currentUserKey') ?? '';
+    if (userKey.isEmpty) {
+      userKey = storage.read('last_logged_in_user') ?? '';
+    }
+    print("Active User Key Found: $userKey");
+
+    if (userKey.isNotEmpty) {
+
+      userName.value = storage.read('userName_$userKey') ?? storage.read('userName') ?? 'User';
+      userEmail.value = storage.read('userEmail_$userKey') ?? storage.read('userEmail') ?? '';
+      userImageUrl.value = storage.read('userProfileImage_$userKey') ?? storage.read('userProfileImage') ?? '';
+      userAddress.value = storage.read('userAddress_$userKey') ?? storage.read('userAddress') ?? '';
+      cardNumber.value = storage.read('userCardNumber_$userKey') ?? storage.read('userCardNumber') ?? '';
+      cardHolder.value = userName.value;
+      expiryDate.value = storage.read('userCardExpire_$userKey') ?? storage.read('userCardExpire') ?? '';
+      cardType.value = storage.read('userCardType_$userKey') ?? 'VISA';
+
+      storage.write('currentUserKey', userKey);
+    } else {
+
+      userName.value = 'Guest';
+      userEmail.value = '';
+      userImageUrl.value = '';
+      userAddress.value = '';
+      cardNumber.value = '';
+      cardHolder.value = 'Guest';
+      expiryDate.value = '';
+      cardType.value = 'VISA';
+    }
+  }
+
+
   void setUserData({
     required String name,
     required String email,
@@ -52,23 +84,27 @@ class HomeLogic extends GetxController {
     String bankCardExpire = '',
     String bankCardType = '',
   }) {
+    String userKey = storage.read('currentUserKey') ?? 'default_user';
+
     userName.value = name.trim().isEmpty ? 'User' : name;
     userEmail.value = email;
     userImageUrl.value = imageUrl;
     userAddress.value = address;
     cardNumber.value = bankCardNumber;
-    cardHolder.value = name.trim().isEmpty ? 'User' : name;
+    cardHolder.value = userName.value;
     expiryDate.value = bankCardExpire;
     cardType.value = bankCardType.isEmpty ? 'VISA' : bankCardType;
 
-    storage.write('userName', userName.value);
-    storage.write('userEmail', email);
-    storage.write('userProfileImage', imageUrl);
-    storage.write('userAddress', address);
-    storage.write('userCardNumber', bankCardNumber);
-    storage.write('userCardExpire', bankCardExpire);
-    storage.write('userCardType', cardType.value);
+
+    storage.write('userName_$userKey', userName.value);
+    storage.write('userEmail_$userKey', email);
+    storage.write('userProfileImage_$userKey', imageUrl);
+    storage.write('userAddress_$userKey', address);
+    storage.write('userCardNumber_$userKey', bankCardNumber);
+    storage.write('userCardExpire_$userKey', bankCardExpire);
+    storage.write('userCardType_$userKey', cardType.value);
   }
+
 
   void updateUserData(UserDataModel newModel) {
     userData.value = newModel;
@@ -272,5 +308,25 @@ class HomeLogic extends GetxController {
       allProductsList.refresh();
     }
   }
+  void addCompletedOrder() {
+    if (cartItems.isEmpty) return;
+
+    final newOrder = {
+      'orderId': "#F10S-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}",
+      'date': DateTime.now(),
+      'status': 'Confirmed',
+      'totalPrice': totalPrice,
+      'items': cartItems.map((item) => {
+        'name': item['title'] ?? 'F10S Piece',
+        'quantity': (item['quantity'] as RxInt).value,
+        'price': item['price'] as double,
+        'image': item['thumbnail'] ?? '',
+      }).toList(),
+    };
+
+    orders.insert(0, newOrder);
+
+  }
+
 }
 

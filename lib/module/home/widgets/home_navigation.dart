@@ -21,7 +21,7 @@ class CustomBottomBar extends GetView<HomeLogic> {
             borderRadius: BorderRadius.circular(35),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.25),
+
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
