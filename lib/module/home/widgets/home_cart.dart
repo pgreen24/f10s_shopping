@@ -165,10 +165,12 @@ class HomeCart extends GetView<HomeLogic> {
                               onDecrease: () {
                                 if (cartItem['quantity'].value > 1) {
                                   cartItem['quantity'].value--;
+                                  controller.saveCartToStorage();
                                 }
                               },
                               onIncrease: () {
                                 cartItem['quantity'].value++;
+                                controller.saveCartToStorage();
                               },
                               onRemove: () {
                                 controller.removeFromCart(index);

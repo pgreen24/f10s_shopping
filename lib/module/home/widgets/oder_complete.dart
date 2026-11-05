@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_routes.dart';
+import 'home_orders_history.dart';
 
 class OderComplete extends GetView<HomeLogic> {
   const OderComplete({super.key});
@@ -388,7 +389,11 @@ class OderComplete extends GetView<HomeLogic> {
               ),
               const Spacer(),
 // Bottom Tracking & Utility Buttons
-              Container(
+          GestureDetector(
+            onTap: () {
+              Get.to(() => const OrderHistoryView());
+            },
+            child:Container(
                 width: double.infinity,
                 height: 60,
                 decoration: BoxDecoration(
@@ -411,6 +416,7 @@ class OderComplete extends GetView<HomeLogic> {
                   ],
                 ),
               ),
+          ),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -422,9 +428,12 @@ class OderComplete extends GetView<HomeLogic> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _buildBottomOutlineButton(
-                      Icons.storefront_outlined,
-                      "Shop More",
+                    child: GestureDetector(
+                      onTap: () => Get.offAllNamed(AppRoutes.home),
+                      child: _buildBottomOutlineButton(
+                        Icons.storefront_outlined,
+                        "Shop More",
+                      ),
                     ),
                   ),
                 ],

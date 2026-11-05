@@ -11,7 +11,7 @@ class HomeLogic extends GetxController {
   var userEmail = ''.obs;
   var userImageUrl = ''.obs;
   var currentIndex = 0.obs;
-  final GetStorage storage = GetStorage();
+  final GetStorage storage = GetStorage('F10S_Storage');
   var wishlistItems = <Map<String, dynamic>>[].obs;
   var cartItems = <Map<String, dynamic>>[].obs;
   var userData = Rxn<UserDataModel>();
@@ -30,10 +30,14 @@ class HomeLogic extends GetxController {
   var orders = <Map<String, dynamic>>[].obs;
 
 
+
   @override
   void onInit() {
     super.onInit();
     loadCurrentUserData();
+    loadOrdersFromStorage();
+    loadWishlistFromStorage();
+    loadCartFromStorage();
     fetchProducts();
   }
   @override
@@ -41,28 +45,40 @@ class HomeLogic extends GetxController {
     super.onReady();
     loadCurrentUserData();
   }
-  void loadCurrentUserData() {
+  void loadOrdersFromStorage() {
+    String userKey = storage.read('currentUserKey') ?? storage.read('last_logged_in_user') ?? '';
+    if (userKey.isEmpty) {
+      orders.clear();
+      return;
+    }
+    List<dynamic>? storedOrders = storage.read<List<dynamic>>('my_orders_list_$userKey');
+    if (storedOrders != null) {
+      orders.assignAll(storedOrders.map((e) => Map<String, dynamic>.from(e),).toList(),
+      );
+    } else {
+      orders.clear();
+    }
+  }
 
+  void loadCurrentUserData() {
     String userKey = storage.read('currentUserKey') ?? '';
+
     if (userKey.isEmpty) {
       userKey = storage.read('last_logged_in_user') ?? '';
     }
-    print("Active User Key Found: $userKey");
 
     if (userKey.isNotEmpty) {
-
-      userName.value = storage.read('userName_$userKey') ?? storage.read('userName') ?? 'User';
-      userEmail.value = storage.read('userEmail_$userKey') ?? storage.read('userEmail') ?? '';
-      userImageUrl.value = storage.read('userProfileImage_$userKey') ?? storage.read('userProfileImage') ?? '';
-      userAddress.value = storage.read('userAddress_$userKey') ?? storage.read('userAddress') ?? '';
-      cardNumber.value = storage.read('userCardNumber_$userKey') ?? storage.read('userCardNumber') ?? '';
+      userName.value = storage.read('userName_$userKey') ?? 'User';
+      userEmail.value = storage.read('userEmail_$userKey') ?? '';
+      userImageUrl.value = storage.read('userProfileImage_$userKey') ?? '';
+      userAddress.value = storage.read('userAddress_$userKey') ?? '';
+      cardNumber.value = storage.read('userCardNumber_$userKey') ?? '';
       cardHolder.value = userName.value;
-      expiryDate.value = storage.read('userCardExpire_$userKey') ?? storage.read('userCardExpire') ?? '';
+      expiryDate.value = storage.read('userCardExpire_$userKey') ?? '';
       cardType.value = storage.read('userCardType_$userKey') ?? 'VISA';
-
       storage.write('currentUserKey', userKey);
-    } else {
 
+    } else {
       userName.value = 'Guest';
       userEmail.value = '';
       userImageUrl.value = '';
@@ -167,33 +183,42 @@ class HomeLogic extends GetxController {
     expiryDate.value = value.isEmpty ? '' : value;
   }
 
+
   void toggleWishlist(Map<String, dynamic> product) {
-    int index = wishlistItems.indexWhere((item) => item['title'] == product['title']);
+    int index = wishlistItems.indexWhere(
+          (item) => item['title'] == product['title'],);
+
     if (index != -1) {
       wishlistItems.removeAt(index);
     } else {
       wishlistItems.add(product);
     }
+
+    saveWishlistToStorage();
   }
+
+
 
   void removeFromWishlist(int index) {
     if (index >= 0 && index < wishlistItems.length) {
       wishlistItems.removeAt(index);
+      saveWishlistToStorage();
     }
   }
+
 
   bool isFavorite(String title) {
     return wishlistItems.any((item) => item['title'] == title);
   }
 
+
   void addToCartFromWishlist(Map<String, dynamic> item) {
-    bool isExist = cartItems.any((element) => element['title'] == item['title']);
+    bool isExist = cartItems.any((element) => element['title'] == item['title'],);
     if (!isExist) {
       double parsedPrice = 0.0;
-      if (item['price'] is num) {
-        parsedPrice = (item['price'] as num).toDouble();
+      if (item['price'] is num) {parsedPrice = (item['price'] as num).toDouble();
       } else {
-        parsedPrice = double.tryParse(item['price'].toString().replaceAll('\$', '')) ?? 0.0;
+        parsedPrice = double.tryParse(item['price'].toString().replaceAll('\$', ''),) ?? 0.0;
       }
       cartItems.add({
         'title': item['title'] ?? '',
@@ -203,34 +228,57 @@ class HomeLogic extends GetxController {
         'color': 0xFFE0E0E0,
         'thumbnail': item['thumbnail'] ?? '',
       });
-      Get.snackbar("Success", "Added to your cart successfully!",
-          snackPosition: SnackPosition.TOP);
+      saveCartToStorage();
+      Get.snackbar("Success", "Added to your cart successfully!", snackPosition: SnackPosition.TOP,
+      );
     } else {
-      Get.snackbar("Notice", "Item is already in your cart!",
-          snackPosition: SnackPosition.TOP);
+      Get.snackbar("Notice", "Item is already in your cart!", snackPosition: SnackPosition.TOP,
+      );
     }
   }
+
+
+  void saveWishlistToStorage() {
+    String userKey = storage.read('currentUserKey') ?? '';
+    if (userKey.isEmpty) return;
+    storage.write('wishlistItems_$userKey', wishlistItems.toList(),);
+  }
+
+  void loadWishlistFromStorage() {
+    String userKey = storage.read('currentUserKey') ?? '';
+    if (userKey.isEmpty) {
+      wishlistItems.clear();
+      return;
+    }
+
+    List<dynamic>? savedWishlist = storage.read('wishlistItems_$userKey');
+    if (savedWishlist != null) {
+      wishlistItems.assignAll(savedWishlist.map((item) => Map<String, dynamic>.from(item),
+        ).toList(),);
+    } else {
+      wishlistItems.clear();
+    }
+  }
+
+
 
 
   void removeFromCart(int index) {
     if (index >= 0 && index < cartItems.length) {
       cartItems.removeAt(index);
+      saveCartToStorage();
     }
   }
 
+
+
   void addToCart(dynamic product, int qty) {
-
-    double parsedPrice = double.tryParse(
-        (product.price ?? '0').toString().replaceAll('\$', '')) ?? 0.0;
-
-
-    int index = cartItems.indexWhere((item) => item['title'] == product.title);
+    double parsedPrice = double.tryParse((product.price ?? '0').toString().replaceAll('\$', ''),) ?? 0.0;
+    int index = cartItems.indexWhere((item) => item['title'] == product.title,);
 
     if (index != -1) {
-
       cartItems[index]['quantity'].value += qty;
     } else {
-
       cartItems.add({
         'title': product.title ?? '',
         'subtitle': product.category ?? 'Standard • M',
@@ -240,7 +288,56 @@ class HomeLogic extends GetxController {
         'thumbnail': product.thumbnail ?? '',
       });
     }
+    saveCartToStorage();
   }
+
+  void saveCartToStorage() {
+    String userKey = storage.read('currentUserKey') ?? '';
+
+    if (userKey.isEmpty) return;
+
+    List<Map<String, dynamic>> cartData =
+    cartItems.map((item) {
+      return {
+        'title': item['title'],
+        'subtitle': item['subtitle'],
+        'price': item['price'],
+        'quantity': (item['quantity'] as RxInt).value,
+        'color': item['color'],
+        'thumbnail': item['thumbnail'],
+      };
+    }).toList();
+
+    storage.write('cartItems_$userKey', cartData);
+  }
+
+  void loadCartFromStorage() {
+    String userKey = storage.read('currentUserKey') ?? '';
+
+    if (userKey.isEmpty) {
+      cartItems.clear();
+      return;
+    }
+
+    List<dynamic>? savedCart =
+    storage.read('cartItems_$userKey');
+
+    if (savedCart != null) {
+      cartItems.assignAll(
+        savedCart.map((item) {
+          final data = Map<String, dynamic>.from(item);
+
+          data['quantity'] =
+              (data['quantity'] as num).toInt().obs;
+
+          return data;
+        }).toList(),
+      );
+    } else {
+      cartItems.clear();
+    }
+  }
+
   void fetchProducts() async {
     try {
       isLoading.value = true;
@@ -287,17 +384,13 @@ class HomeLogic extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         var productsData = response.data['products'] as List;
-
         List<ProductModel> totalProducts = ProductModel.fromJsonList(productsData);
-
         if (categoryKey == 'all') {
 
           allProductsList.value = totalProducts;
         } else {
-
           allProductsList.value = totalProducts.where((product) {
-            return product.category.toString().toLowerCase().trim() ==
-                categoryKey.toLowerCase().trim();
+            return product.category.toString().toLowerCase().trim() == categoryKey.toLowerCase().trim();
           }).toList();
         }
       }
@@ -310,10 +403,12 @@ class HomeLogic extends GetxController {
   }
   void addCompletedOrder() {
     if (cartItems.isEmpty) return;
+    String userKey = storage.read('currentUserKey') ?? '';
 
+    if (userKey.isEmpty) return;
     final newOrder = {
       'orderId': "#F10S-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}",
-      'date': DateTime.now(),
+      'date': DateTime.now().toIso8601String(),
       'status': 'Confirmed',
       'totalPrice': totalPrice,
       'items': cartItems.map((item) => {
@@ -325,6 +420,7 @@ class HomeLogic extends GetxController {
     };
 
     orders.insert(0, newOrder);
+    storage.write('my_orders_list_$userKey', orders.toList());
 
   }
 

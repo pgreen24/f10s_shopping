@@ -13,7 +13,7 @@ class LoginLogic extends GetxController {
   final RxBool isObscureText = true.obs;
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final GetStorage storage = GetStorage();
+  final GetStorage storage = GetStorage('F10S_Storage');
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   @override
@@ -91,11 +91,8 @@ class LoginLogic extends GetxController {
         await storage.write('isLoggedIn', true);
         await storage.write('currentUserKey', userKey);
         await storage.write('last_logged_in_user', userKey);
-
-        await secureStorage.write(key: 'token_$userKey', value: accessToken);
-        await secureStorage.write(key: 'last_logged_in_user', value: usernameInput);
-        await secureStorage.write(key: 'saved_password_$userKey', value: passwords);
-
+        await secureStorage.write(key: 'token_$userKey', value: accessToken,);
+        await secureStorage.write(key: 'saved_password_$userKey', value: passwords,);
         await storage.write('userName_$userKey', fullName);
         await storage.write('userEmail_$userKey', fetchedEmail);
         await storage.write('userProfileImage_$userKey', userImageUrl);
@@ -105,10 +102,7 @@ class LoginLogic extends GetxController {
         await storage.write('userCardType_$userKey', bankCardType);
         await storage.save();
 
-        Get.snackbar("Success", "Login Successful", snackPosition: SnackPosition.TOP);
         Get.offAllNamed(AppRoutes.home);
-
-
     } else {
         Get.snackbar("Login Failed", "Invalid username or password. Please try again.",
             snackPosition: SnackPosition.TOP);

@@ -6,7 +6,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init('');
+  await GetStorage.init('F10S_Storage');
   ResponsiveSizingConfig.instance.setCustomBreakpoints(const ScreenBreakpoints(desktop: 800, tablet: 550, watch: 200));
   runApp(const MyApp());
 

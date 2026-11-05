@@ -115,14 +115,14 @@ class HomeProfile extends GetView<HomeLogic> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    "12",
-                                    style: TextStyle(
+                                  Obx(() => Text(
+                                    "${controller.orders.length}",
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black,
                                     ),
-                                  ),
+                                  )),
                                   const Text(
                                     "orders",
                                     style: TextStyle(
@@ -325,52 +325,59 @@ class HomeProfile extends GetView<HomeLogic> {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 48,
-                                height: 48,
-                                child: Card(
-                                  elevation: 0,
-                                  color: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: Colors.grey.shade200),
-                                    borderRadius: BorderRadius.circular(12),
+                          // 🎯 সংশোধিত My Orders রো (Row)
+                          GestureDetector(
+                            onTap: () => Get.to(() => const OrderHistoryView()), // পুরো রো-তে ক্লিক কাজ করবে
+                            behavior: HitTestBehavior.opaque, // ফাঁকা জায়গায় ক্লিক করলেও যেন কাজ করে
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 48,
+                                    height: 48,
+                                    child: Card(
+                                      elevation: 0,
+                                      color: Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: Colors.grey.shade200),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(Icons.shopping_bag_outlined),
+                                    ),
                                   ),
-                                  child: const Icon(Icons.shopping_bag_outlined),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
+                                  const SizedBox(width: 16),
 
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "My Orders",
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "My Orders",
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Obx(() => Text(
+                                          controller.orders.isEmpty
+                                              ? "No active orders"
+                                              : "View ${controller.orders.length} orders history",
+                                          style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                                        )),
+                                      ],
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "View history & active orders",
-                                      style: TextStyle(color: Colors.grey.shade500),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                    color: Colors.grey.shade400,
+                                  )
+                                ],
                               ),
-
-
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () => Get.to(() => const OrderHistoryView()),
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: Colors.grey.shade400,
-                                ),
-                              )
-                            ],
+                            ),
                           ),
+
 
                           const SizedBox(height: 24),
 
@@ -640,10 +647,10 @@ class HomeProfile extends GetView<HomeLogic> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             final storage = GetStorage();
-                            storage.write('isLoggedIn', false);
-                            storage.remove('currentUserKey');
+                            await storage.write('isLoggedIn', false);
+                            await storage.remove('currentUserKey');
                             Get.offAllNamed(AppRoutes.login);
                           },
                           style: ElevatedButton.styleFrom(

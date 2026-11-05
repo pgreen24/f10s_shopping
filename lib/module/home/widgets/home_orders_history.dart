@@ -51,7 +51,7 @@ class OrderHistoryView extends GetView<HomeLogic> {
 
   Widget _buildOrderCard(dynamic order) {
 
-    final DateTime orderDate = order['date'] ?? DateTime.now();
+    final DateTime orderDate = order['date'] is String ? DateTime.parse(order['date']) : (order['date'] ?? DateTime.now());
     final String formattedDate = DateFormat('MMM d, yyyy • hh:mm a').format(orderDate);
 
     return Container(
